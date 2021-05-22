@@ -2,26 +2,67 @@ package utils;
 
 import java.io.Serializable;
 import java.text.DateFormatSymbols;
+import java.text.ParseException;
+import java.time.LocalDate;
 import java.time.Month;
+import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.List;
+
+import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.api.java.function.Function;
+import org.apache.spark.mllib.regression.LabeledPoint;
+import org.apache.spark.ml.linalg.Vector;
+import org.apache.spark.ml.regression.LinearRegression;
+import org.apache.spark.ml.regression.LinearRegressionTrainingSummary;
+import org.apache.spark.mllib.linalg.Vectors;
+import org.apache.spark.mllib.regression.LinearRegressionModel;
+import org.apache.spark.mllib.regression.LinearRegressionWithSGD;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+import org.apache.spark.sql.SparkSession;
+import java.text.SimpleDateFormat;
 
 import scala.Tuple2;
 
 public class QueryComparators<K, V> implements Comparator<Tuple2<K, V>>, Serializable{
 
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		String month_s = new DateFormatSymbols().getMonths()[11];
-		System.out.println(month_s);
-		Date date = new Date();
-		Date date1 = new Date();
-        date.setMonth(3);
-        date1.setMonth(2);
-        System.out.println(date.after(date1));
-        Month m = Month.of(3);
-        Month m1 = Month.of(3);
-        System.out.println(m.compareTo(m1));
+	public static void main(String[] args) throws ParseException {
+		SparkSession spark = SparkSession
+                .builder()
+                .appName("Query1")
+                .config("spark.master", "local")
+                .getOrCreate();
+		
+		Dataset<Row> dataset = spark.read().csv("/home/giuseppe/Scrivania/"
+        		+ "prova.csv");
+		JavaRDD<Row> dataJavaRDD = dataset.toJavaRDD();
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		
+		JavaRDD<String> strrJavaRDD = dataJavaRDD.map(row -> {
+			return new String(row.getString(0) + "," + row.getString(1));
+		});
+		JavaRDD<LabeledPoint> JavaRDDLP = strrJavaRDD.map(line -> {
+	        String[] parts = line.split(",");
+	        LocalDate date = LocalDate.parse(parts[0], DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+	        double[] feat = {(double) date.getDayOfYear()};
+	        return new LabeledPoint(Double.valueOf(parts[parts.length - 1]), Vectors.dense(feat));
+	    }).cache();
+	
+		List<LabeledPoint> line =  JavaRDDLP.take(100);
+        for (LabeledPoint l:line) {
+			System.out.println(l.toString());
+		}
+		// Building the model
+	    int numIterations = 100;
+	    final LinearRegressionModel model = 
+	    		LinearRegressionWithSGD.train(JavaRDD.toRDD(JavaRDDLP), numIterations);
+	    LocalDate date = LocalDate.parse("2020-03-14", DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        double[] test = {(double) date.getDayOfYear()};
+        System.out.println(test[0]);
+	    double prediction = model.predict(Vectors.dense(test));
+	    System.out.println(prediction);
 	}
 	
 	private Comparator<K> comparator_K;
