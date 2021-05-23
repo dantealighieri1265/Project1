@@ -6,10 +6,12 @@ import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.math3.stat.regression.SimpleRegression;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.Function;
 import org.apache.spark.mllib.regression.LabeledPoint;
@@ -29,7 +31,11 @@ import scala.Tuple2;
 public class QueryComparators<K, V> implements Comparator<Tuple2<K, V>>, Serializable{
 
 	public static void main(String[] args) throws ParseException {
-		SparkSession spark = SparkSession
+		//regression.addData(null[[1.0,1.0]]);
+		/*regression.addData([(32,23), (33,70), (34,57), (35,81), (36,72), (37,16), (38,25), 
+		                    (39,64), (40,44), (41,19), (42,35), (43,23), (44,2), (46,48), (47,24), (48,24), 
+		                    (49,28), (50,28), (51,11), (52,7), (53,18), (54,22), (55,6), (56,7), (57,19), (58,4), (59,3)]);*/
+		/*SparkSession spark = SparkSession
                 .builder()
                 .appName("Query1")
                 .config("spark.master", "local")
@@ -62,7 +68,7 @@ public class QueryComparators<K, V> implements Comparator<Tuple2<K, V>>, Seriali
         double[] test = {(double) date.getDayOfYear()};
         System.out.println(test[0]);
 	    double prediction = model.predict(Vectors.dense(test));
-	    System.out.println(prediction);
+	    System.out.println(prediction);*/
 	}
 	
 	private Comparator<K> comparator_K;
@@ -81,5 +87,8 @@ public class QueryComparators<K, V> implements Comparator<Tuple2<K, V>>, Seriali
         }
     	return c;
     }
+    
+    
+    
 
 }

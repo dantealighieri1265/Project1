@@ -41,7 +41,7 @@ public class Query1 {
 	        
 	        JavaPairRDD<String, Tuple2<String, Long>> centriCountForJoin = centriCount.mapToPair((row -> { 
 	        	return new Tuple2<>(row._1._1, new Tuple2<>(row._1._2, row._2));
-	        }));
+	        })).cache();
 	        
 	        
 	        
