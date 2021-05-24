@@ -1,4 +1,4 @@
-package query1;
+package queries;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -18,12 +18,17 @@ import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.PairFlatMapFunction;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
+import org.apache.spark.sql.RowFactory;
+import org.apache.spark.sql.SaveMode;
 import org.apache.spark.sql.SparkSession;
+import org.apache.spark.sql.types.DataTypes;
+import org.apache.spark.sql.types.StructField;
+import org.apache.spark.sql.types.StructType;
 
 import scala.Tuple2;
 import scala.Tuple3;
 import utils.Query2Comparator;
-import utils.QueryComparators;
+import utils.Query1Comparator;
 
 public class Query2 {
 
@@ -117,7 +122,6 @@ public class Query2 {
 			}
         	LocalDate lastDayFor =  Year.now().atDay(last);
         	LocalDate ld = lastDayFor.withDayOfMonth(lastDayFor.lengthOfMonth());
-        	String day = String.valueOf(ld.plusDays(1).getDayOfMonth());
         	Month month = ld.plusDays(1).getMonth();
         	double prediction = regression.predict(ld.plusDays(1).getDayOfYear());
         	if (prediction<0.0) {
@@ -140,7 +144,7 @@ public class Query2 {
         	Iterable<Tuple2<String, Integer>> i = listOrdered;
         	return new Tuple2<>(new Tuple2<>(row._1._1(), row._1._2()), i);
         	
-        }).sortByKey(new QueryComparators<Month, String>(Comparator.<Month>naturalOrder(), Comparator.<String>naturalOrder())).flatMapToPair(row ->{
+        }).sortByKey(new Query1Comparator<Month, String>(Comparator.<Month>naturalOrder(), Comparator.<String>naturalOrder())).flatMapToPair(row ->{
         	ArrayList<Tuple2<Tuple3<String, String, String>, Integer>> list = new ArrayList<>();
         	for (Tuple2<String, Integer> regVac : row._2) {
         		String month = "1 "+ row._1._1().name();
@@ -158,7 +162,23 @@ public class Query2 {
 		}
         
         //result.saveAsTextFile("Query2");
-               
+        JavaRDD<Row> resultJavaRDD = result.map(row -> {
+			return RowFactory.create(row._1()._1(), row._1()._2(), row._1()._3(), row._2);
+        });       
+        List<StructField> resultFields = new ArrayList<>();
+        resultFields.add(DataTypes.createStructField("giorno", DataTypes.StringType, false));
+        resultFields.add(DataTypes.createStructField("fascia_eta", DataTypes.StringType, false));
+        resultFields.add(DataTypes.createStructField("regione", DataTypes.StringType, false));
+        resultFields.add(DataTypes.createStructField("predizione_vaccini", DataTypes.IntegerType, false));
+        StructType resultStruct = DataTypes.createStructType(resultFields);
+        
+     // Saving performance results
+        Dataset<Row> query2DS = spark.createDataFrame(resultJavaRDD, resultStruct);
+        query2DS.write()
+                .format("csv")
+                .option("header", true)
+                .mode(SaveMode.Overwrite)
+                .save("Query2_results");
         
         
         

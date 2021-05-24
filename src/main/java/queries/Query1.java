@@ -1,19 +1,28 @@
-package query1;
+package queries;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
+
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.api.java.function.Function;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
+import org.apache.spark.sql.RowFactory;
+import org.apache.spark.sql.SaveMode;
 import org.apache.spark.sql.SparkSession;
+import org.apache.spark.sql.types.DataTypes;
+import org.apache.spark.sql.types.StructField;
+import org.apache.spark.sql.types.StructType;
 
 import scala.Tuple2;
-import utils.QueryComparators;
+import utils.Query1Comparator;
 
 public class Query1 {
 
@@ -70,7 +79,8 @@ public class Query1 {
 
 	       
 	        //final result
-	        JavaPairRDD<Tuple2<Month, String>, Long> monthAreaTotalPerDay = monthAreaTotalJoin.mapToPair((row -> {
+	        @SuppressWarnings("unlikely-arg-type")
+			JavaPairRDD<Tuple2<Month, String>, Long> monthAreaTotalPerDay = monthAreaTotalJoin.mapToPair((row -> {
 	            Month month = row._2._1._1;
 	            int[] i = {1, 3, 5, 7, 8, 10, 12};
 	            Long nDay = (long) 0;
@@ -82,18 +92,32 @@ public class Query1 {
 					nDay = (long) 30;
 				}
 	            return new Tuple2<>(new Tuple2<>(month, row._2._2._1), row._2._1._2/(nDay*row._2._2._2));
-	        })).sortByKey(new QueryComparators<Month, String>(Comparator.<Month>naturalOrder(), Comparator.<String>naturalOrder()));
+	        })).sortByKey(new Query1Comparator<Month, String>(Comparator.<Month>naturalOrder(), Comparator.<String>naturalOrder()));
 	        
 	        Instant end = Instant.now();
 	        System.out.println(("Query completed in " + Duration.between(start, end).toMillis() + "ms"));
-	        monthAreaTotalPerDay.saveAsTextFile("results");
+	        //monthAreaTotalPerDay.saveAsTextFile("results");
 	        /*List<Tuple2<Tuple2<String, String>, Long>> line =  monthAreaTotalPerDay.take(10);
 	        
 	        for (Tuple2<Tuple2<String, String>, Long> l:line) {
 				System.out.println(l._1._1 +", "+l._1._2+", "+l._2);
 			}*/
+	        JavaRDD<Row> resultJavaRDD = monthAreaTotalPerDay.map((Function<Tuple2<Tuple2<Month, String>, Long>, Row>) row -> {
+				return RowFactory.create(row._1()._1().name(), row._1()._2(), row._2);
+	        });
+	        List<StructField> resultFields = new ArrayList<>();
+	        resultFields.add(DataTypes.createStructField("mese", DataTypes.StringType, false));
+	        resultFields.add(DataTypes.createStructField("regione", DataTypes.StringType, false));
+	        resultFields.add(DataTypes.createStructField("numero_medio_vaccini", DataTypes.LongType, false));
+	        StructType resultStruct = DataTypes.createStructType(resultFields);
 	        
-	        
+	     // Saving performance results
+	        Dataset<Row> query1DS = spark.createDataFrame(resultJavaRDD, resultStruct);
+	        query1DS.write()
+	                .format("csv")
+	                .option("header", true)
+	                .mode(SaveMode.Overwrite)
+	                .save("Query1_results");
 	        
 	        /*List<Tuple2<Date, Tuple2<String, String>>> line =  parsedSummary.collect();
 	        for (Tuple2<Date, Tuple2<String, String>> l:line) {

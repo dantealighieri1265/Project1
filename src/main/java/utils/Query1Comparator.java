@@ -28,7 +28,7 @@ import java.text.SimpleDateFormat;
 
 import scala.Tuple2;
 
-public class QueryComparators<K, V> implements Comparator<Tuple2<K, V>>, Serializable{
+public class Query1Comparator<K, V> implements Comparator<Tuple2<K, V>>, Serializable{
 
 	public static void main(String[] args) throws ParseException {
 		//regression.addData(null[[1.0,1.0]]);
@@ -74,7 +74,7 @@ public class QueryComparators<K, V> implements Comparator<Tuple2<K, V>>, Seriali
 	private Comparator<K> comparator_K;
 	private Comparator<V> comparator_V;
 
-    public QueryComparators(Comparator<K> comparator_K, Comparator<V> comparator_V) {
+    public Query1Comparator(Comparator<K> comparator_K, Comparator<V> comparator_V) {
         this.comparator_K = comparator_K;
         this.comparator_V = comparator_V;
     }
