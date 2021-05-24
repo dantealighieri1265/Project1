@@ -1,6 +1,5 @@
 package query1;
 
-import java.io.Serializable;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -35,7 +34,7 @@ public class Query2 {
                 .config("spark.master", "local")
                 .getOrCreate();
 
-        Dataset<Row> datasetVaccine = spark.read().option("header","true").csv("/home/marco/Scrivania/"
+        Dataset<Row> datasetVaccine = spark.read().option("header","true").csv("/home/giuseppe/Scrivania/"
         		+ "somministrazioni-vaccini-latest.csv");
         Instant start = Instant.now();
         JavaRDD<Row> rawVaccine = datasetVaccine.toJavaRDD();
@@ -158,7 +157,7 @@ public class Query2 {
 			System.out.println(l);
 		}
         
-        result.saveAsTextFile("Query2");
+        //result.saveAsTextFile("Query2");
                
         
         

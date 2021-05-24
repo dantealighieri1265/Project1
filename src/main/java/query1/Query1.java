@@ -24,9 +24,9 @@ public class Query1 {
 	                .config("spark.master", "local")
 	                .getOrCreate();
 
-	        Dataset<Row> datasetSummary = spark.read().option("header","true").csv("/home/marco/Scrivania/"
+	        Dataset<Row> datasetSummary = spark.read().option("header","true").csv("/home/giuseppe/Scrivania/"
 	        		+ "somministrazioni-vaccini-summary-latest.csv");
-	        Dataset<Row> datasetType = spark.read().option("header","true").csv("/home/marco/Scrivania/"
+	        Dataset<Row> datasetType = spark.read().option("header","true").csv("/home/giuseppe/Scrivania/"
 	        		+ "punti-somministrazione-tipologia.csv");
 
 	        Instant start = Instant.now();
