@@ -28,6 +28,7 @@ import org.apache.spark.sql.types.StructType;
 import scala.Tuple2;
 import scala.Tuple3;
 import utils.Query2Comparator;
+import utils.HdfsUtility;
 import utils.Query1Comparator;
 
 public class Query2 {
@@ -39,8 +40,10 @@ public class Query2 {
                 .config("spark.master", "local")
                 .getOrCreate();
 
-        Dataset<Row> datasetVaccine = spark.read().option("header","true").csv("/home/giuseppe/Scrivania/"
-        		+ "somministrazioni-vaccini-latest.csv");
+        
+        Dataset<Row> datasetVaccine = spark.read().option("header","true").csv("hdfs:"+HdfsUtility.URL_HDFS+":" + 
+        		HdfsUtility.PORT_HDFS+HdfsUtility.INPUT_HDFS+"/somministrazioni-vaccini-latest.csv");
+        
         Instant start = Instant.now();
         JavaRDD<Row> rawVaccine = datasetVaccine.toJavaRDD();
         
@@ -173,12 +176,8 @@ public class Query2 {
         StructType resultStruct = DataTypes.createStructType(resultFields);
         
      // Saving performance results
-        Dataset<Row> query2DS = spark.createDataFrame(resultJavaRDD, resultStruct);
-        query2DS.write()
-                .format("csv")
-                .option("header", true)
-                .mode(SaveMode.Overwrite)
-                .save("Query2_results");
+        Dataset<Row> dataset = spark.createDataFrame(resultJavaRDD, resultStruct);
+        HdfsUtility.write(dataset, HdfsUtility.QUERY2_DIR, SaveMode.Overwrite);
         
         
         

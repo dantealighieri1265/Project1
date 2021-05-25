@@ -1,4 +1,4 @@
-package queries;
+ package queries;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -24,6 +24,7 @@ import org.apache.spark.sql.types.StructField;
 import org.apache.spark.sql.types.StructType;
 
 import scala.Tuple2;
+import utils.HdfsUtility;
 
 public class Query3 {
 
@@ -35,10 +36,12 @@ public class Query3 {
                 .getOrCreate();
 		
 		LocalDate firstJune = LocalDate.parse("2021-06-01", DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        Dataset<Row> datasetVaccine = spark.read().option("header","true").csv("/home/giuseppe/Scrivania/"
-        		+ "somministrazioni-vaccini-summary-latest.csv");
-        Dataset<Row> datasetPopulation = spark.read().option("header","true").csv("/home/giuseppe/Scrivania/"
-        		+ "totale-popolazione.csv");
+		Dataset<Row> datasetVaccine = spark.read().option("header","true").csv("hdfs:"+HdfsUtility.URL_HDFS+":" + 
+        		HdfsUtility.PORT_HDFS+HdfsUtility.INPUT_HDFS+"/somministrazioni-vaccini-summary-latest.csv");
+		
+		Dataset<Row> datasetPopulation = spark.read().option("header","true").csv("hdfs:"+HdfsUtility.URL_HDFS+":" + 
+        		HdfsUtility.PORT_HDFS+HdfsUtility.INPUT_HDFS+"/totale-popolazione.csv");
+		
         Instant start = Instant.now();
         JavaRDD<Row> rawVaccine = datasetVaccine.toJavaRDD().cache();
         JavaRDD<Row> rawPopulation = datasetPopulation.toJavaRDD().cache();
@@ -132,7 +135,7 @@ public class Query3 {
 		}
         
         Instant end = Instant.now();
-        System.out.println(("Query 2 completed in " + Duration.between(start, end).toMillis() + "ms"));
+        System.out.println(("Query 3 completed in " + Duration.between(start, end).toMillis() + "ms"));
        
         List<StructField> resultFields = new ArrayList<>();
         resultFields.add(DataTypes.createStructField("regione", DataTypes.StringType, false));
@@ -141,12 +144,8 @@ public class Query3 {
         StructType resultStruct = DataTypes.createStructType(resultFields);
         
      // Saving performance results
-        Dataset<Row> query3DS = spark.createDataFrame(resultJavaRDD, resultStruct);
-        query3DS.write()
-                .format("csv")
-                .option("header", true)
-                .mode(SaveMode.Overwrite)
-                .save("Query3_results_1");
+        Dataset<Row> dataset_results = spark.createDataFrame(resultJavaRDD, resultStruct);
+        HdfsUtility.write(dataset_results, HdfsUtility.QUERY3_RESULTS_DIR, SaveMode.Overwrite);
         
         List<StructField> performanceFields = new ArrayList<>();
         performanceFields.add(DataTypes.createStructField("algorithm", DataTypes.StringType, false));
@@ -156,12 +155,8 @@ public class Query3 {
         StructType performanceStruct = DataTypes.createStructType(performanceFields);
         
      // Saving performance results
-        Dataset<Row> query3DS1 = spark.createDataFrame(listPerformance, performanceStruct);
-        query3DS1.write()
-                .format("csv")
-                .option("header", true)
-                .mode(SaveMode.Overwrite)
-                .save("Query3_performance");
+        Dataset<Row> dataset_performance = spark.createDataFrame(listPerformance, performanceStruct);
+        HdfsUtility.write(dataset_performance, HdfsUtility.QUERY3_PERFORMANCE_DIR, SaveMode.Overwrite);
         
         List<StructField> clusterResultFields = new ArrayList<>();
         clusterResultFields.add(DataTypes.createStructField("algorithm", DataTypes.StringType, false));
@@ -173,19 +168,9 @@ public class Query3 {
         
      // Saving performance results
         for (JavaRDD<Row> rdd : listJavaRDD) {
-        	Dataset<Row> query3DS2 = spark.createDataFrame(rdd, clusterResultStruct);
-            query3DS2.write()
-                    .format("csv")
-                    .option("header", true)
-                    .mode(SaveMode.Append)
-                    .save("Query3_custerResult");
+        	Dataset<Row> dataset_cluster = spark.createDataFrame(rdd, clusterResultStruct);
+        	HdfsUtility.write(dataset_cluster, HdfsUtility.QUERY3_CLUSTER_DIR, SaveMode.Append);
 		}
-       /* Dataset<Row> query3DS2 = spark.createDataFrame(, clusterResultStruct);
-        query3DS2.write()
-                .format("csv")
-                .option("header", true)
-                .mode(SaveMode.Overwrite)
-                .save("Query3_custerResult");*/
         
         
         

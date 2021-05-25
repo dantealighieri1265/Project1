@@ -1,4 +1,7 @@
 package queries;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -9,6 +12,9 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.Function;
@@ -20,8 +26,10 @@ import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.StructField;
 import org.apache.spark.sql.types.StructType;
+import org.netlib.util.booleanW;
 
 import scala.Tuple2;
+import utils.HdfsUtility;
 import utils.Query1Comparator;
 
 public class Query1 {
@@ -32,11 +40,47 @@ public class Query1 {
 	                .appName("Query1")
 	                .config("spark.master", "local")
 	                .getOrCreate();
+			
+			LocalDate last_dec = LocalDate.parse("2020-12-31", DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+			final String codec = "parquet";
+			FileSystem fs;
+			
+			
+			
 
-	        Dataset<Row> datasetSummary = spark.read().option("header","true").csv("/home/giuseppe/Scrivania/"
-	        		+ "somministrazioni-vaccini-summary-latest.csv");
-	        Dataset<Row> datasetType = spark.read().option("header","true").csv("/home/giuseppe/Scrivania/"
-	        		+ "punti-somministrazione-tipologia.csv");
+			Dataset<Row> datasetSummary = spark.read().option("header","true").csv("hdfs:"+HdfsUtility.URL_HDFS+":" + 
+	        		HdfsUtility.PORT_HDFS+HdfsUtility.INPUT_HDFS+"/somministrazioni-vaccini-summary-latest.csv");
+	        
+	        Dataset<Row> datasetType = spark.read().option("header","true").csv("hdfs:"+HdfsUtility.URL_HDFS+":" + 
+	        		HdfsUtility.PORT_HDFS+HdfsUtility.INPUT_HDFS+"/punti-somministrazione-tipologia.csv");
+	        	        
+
+	        /*datasetSummary.write().format(codec).save("hdfs:"+HdfsUtility.URL_HDFS+":" + 
+	        		HdfsUtility.PORT_HDFS+HdfsUtility.INPUT_HDFS+"/somministrazioni-vaccini-summary-latest.parquet");*/
+	        datasetSummary.write().mode(SaveMode.Overwrite).parquet("hdfs:"+HdfsUtility.URL_HDFS+":" + 
+	        		HdfsUtility.PORT_HDFS+HdfsUtility.INPUT_HDFS+"/somministrazioni-vaccini-summary-latest.parquet");
+	        
+	        try {
+				fs = FileSystem.get(new URI("hdfs:"+HdfsUtility.URL_HDFS+":" +HdfsUtility.PORT_HDFS), new Configuration());
+				
+				String oldName = fs.globStatus(new Path("/data/somministrazioni-vaccini-summary-latest.parquet/part*.parquet"))[0].getPath().getName();
+				
+				boolean ok = fs.rename(new Path("/data/somministrazioni-vaccini-summary-latest.parquet/"+oldName), new Path("/data/somministrazioni-vaccini-summary-latest1.parquet"));
+				int newName = fs.globStatus(new Path("/data/*.parquet"))[0].getPath().depth();
+				System.out.println(fs.toString()+", "+oldName+", "+ok+", "+newName);
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (URISyntaxException e) {
+				e.printStackTrace();
+			}
+	        
+	        
+	       /* Dataset<Row> datasetSummary = spark.read().option("header","true").csv("hdfs:"+HdfsUtility.URL_HDFS+":" + 
+	        		HdfsUtility.PORT_HDFS+HdfsUtility.INPUT_HDFS+"/somministrazioni-vaccini-summary-latest.parquet");
+	        
+	        Dataset<Row> datasetType = spark.read().option("header","true").csv("hdfs:"+HdfsUtility.URL_HDFS+":" + 
+	        		HdfsUtility.PORT_HDFS+HdfsUtility.INPUT_HDFS+"/punti-somministrazione-tipologia.parquet");*/
+	        
 
 	        Instant start = Instant.now();
 	        JavaRDD<Row> rawSummary = datasetSummary.toJavaRDD();
@@ -55,11 +99,13 @@ public class Query1 {
 	        
 	        
 	        
-	        //Sort somminastrazioni-vaccini-latest
+	        //Sort somministrazioni-vaccini-latest
 	        JavaPairRDD<LocalDate, Tuple2<String, Long>> parsedSummary = rawSummary.mapToPair((row -> {
 	            LocalDate date = LocalDate.parse(row.getString(0), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 	            return new Tuple2<>(date, new Tuple2<>(row.getString(1), Long.valueOf(row.getString(2))));
-	        })).sortByKey(true);
+	        })).filter(row -> {
+	        	return row._1.isAfter(last_dec);
+	        }).sortByKey(true);
 	        
 	        
 	        
@@ -105,6 +151,7 @@ public class Query1 {
 	        JavaRDD<Row> resultJavaRDD = monthAreaTotalPerDay.map((Function<Tuple2<Tuple2<Month, String>, Long>, Row>) row -> {
 				return RowFactory.create(row._1()._1().name(), row._1()._2(), row._2);
 	        });
+	        
 	        List<StructField> resultFields = new ArrayList<>();
 	        resultFields.add(DataTypes.createStructField("mese", DataTypes.StringType, false));
 	        resultFields.add(DataTypes.createStructField("regione", DataTypes.StringType, false));
@@ -112,13 +159,8 @@ public class Query1 {
 	        StructType resultStruct = DataTypes.createStructType(resultFields);
 	        
 	     // Saving performance results
-	        Dataset<Row> query1DS = spark.createDataFrame(resultJavaRDD, resultStruct);
-	        query1DS.write()
-	                .format("csv")
-	                .option("header", true)
-	                .mode(SaveMode.Overwrite)
-	                .save("Query1_results");
-	        
+	        Dataset<Row> dataset = spark.createDataFrame(resultJavaRDD, resultStruct);
+	        HdfsUtility.write(dataset, HdfsUtility.QUERY1_DIR, SaveMode.Overwrite);
 	        /*List<Tuple2<Date, Tuple2<String, String>>> line =  parsedSummary.collect();
 	        for (Tuple2<Date, Tuple2<String, String>> l:line) {
 				System.out.println(l);
