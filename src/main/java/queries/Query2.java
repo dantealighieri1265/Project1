@@ -177,9 +177,18 @@ public class Query2 {
      // Saving performance results
         Dataset<Row> dataset = spark.createDataFrame(resultJavaRDD, resultStruct);
         HdfsUtility.write(dataset, HdfsUtility.QUERY2_DIR, SaveMode.Overwrite, false, "query2_results.parquet");
-        
-        
-        
+        if (ClassForTest.DEBUG) {
+            HdfsUtility.writeForTest(dataset, HdfsUtility.QUERY2_DIR, SaveMode.Overwrite, false, "query2_results.csv");
+        }
+       
+	}
+	public static void main(String[] args) {
+		SparkSession spark = SparkSession
+                .builder()
+                .appName("Test")
+                .config("spark.master", "local")
+                .getOrCreate();
+		Query2.run(spark);
 	}
 
 }

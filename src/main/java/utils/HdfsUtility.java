@@ -3,6 +3,8 @@ package utils;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Paths;
+import java.util.List;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
@@ -61,6 +63,14 @@ public class HdfsUtility {
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public static void writeForTest(Dataset<Row> dataset, String dir, SaveMode mode, boolean multipart, String newName) {
+		dataset.write()
+	        .format("csv")
+	        .option("header", true)
+	        .mode(mode)
+	        .save("Results"+dir);
 	}
 	
 	public static Dataset<Row> read(SparkSession spark, String fileName, String dir) {

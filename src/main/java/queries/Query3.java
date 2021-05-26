@@ -150,9 +150,10 @@ public class Query3 {
         resultFields.add(DataTypes.createStructField("percentuale_vaccinati", DataTypes.DoubleType, false));
         StructType resultStruct = DataTypes.createStructType(resultFields);
         
-     // Saving performance results
+     // Saving results
         Dataset<Row> dataset_results = spark.createDataFrame(resultJavaRDD, resultStruct);
         HdfsUtility.write(dataset_results, HdfsUtility.QUERY3_RESULTS_DIR, SaveMode.Overwrite, false, "query3_results.parquet");
+
         
         List<StructField> performanceFields = new ArrayList<>();
         performanceFields.add(DataTypes.createStructField("algorithm", DataTypes.StringType, false));
@@ -161,7 +162,7 @@ public class Query3 {
         performanceFields.add(DataTypes.createStructField("cost", DataTypes.DoubleType, false));
         StructType performanceStruct = DataTypes.createStructType(performanceFields);
         
-     // Saving performance results
+     // Saving performance 
         Dataset<Row> dataset_performance = spark.createDataFrame(listPerformance, performanceStruct);
         HdfsUtility.write(dataset_performance, HdfsUtility.QUERY3_PERFORMANCE_DIR, SaveMode.Overwrite, false, "query3_performance.parquet");
         
@@ -173,10 +174,14 @@ public class Query3 {
         clusterResultFields.add(DataTypes.createStructField("cluster", DataTypes.IntegerType, false));
         StructType clusterResultStruct = DataTypes.createStructType(clusterResultFields);
         
-     // Saving performance results
+     // Saving cluster
+        Dataset<Row> dataset_cluster = null;
         for (JavaRDD<Row> rdd : listJavaRDD) {
-        	Dataset<Row> dataset_cluster = spark.createDataFrame(rdd, clusterResultStruct);
+        	 dataset_cluster = spark.createDataFrame(rdd, clusterResultStruct);
         	HdfsUtility.write(dataset_cluster, HdfsUtility.QUERY3_CLUSTER_DIR+"_Support", SaveMode.Append, false, "_Support");
+        	if (ClassForTest.DEBUG) {
+            	HdfsUtility.writeForTest(dataset_cluster, HdfsUtility.QUERY3_CLUSTER_DIR, SaveMode.Append, false, "query3_cluster.csv");
+        	}
 		}
         
         /*Dataset<Row> df= spark.read().parquet("hdfs:"+HdfsUtility.URL_HDFS+":" + 
@@ -192,6 +197,15 @@ public class Query3 {
 			System.out.println(l);
 		}
         
+        if (ClassForTest.DEBUG) {
+            HdfsUtility.writeForTest(dataset_performance, HdfsUtility.QUERY3_PERFORMANCE_DIR, SaveMode.Overwrite, false, "query3_performance.csv");
+            HdfsUtility.writeForTest(dataset_results, HdfsUtility.QUERY3_RESULTS_DIR, SaveMode.Overwrite, false, "query3_results.csv");
+           
+        }
+        
+
+
+        
                 /*List<Tuple2<String, Integer>> line =  areaBelongTo.take(100);
         for (Tuple2<String, Integer> l:line) {
 			System.out.println(l);
@@ -204,8 +218,12 @@ public class Query3 {
         //regionAgeMonthRegression.saveAsTextFile("Query3regression");
 	}
 	public static void main(String[] args) {
-		Query3 q3 = new Query3();
-		//q3.run();
+		SparkSession spark = SparkSession
+                .builder()
+                .appName("Test")
+                .config("spark.master", "local")
+                .getOrCreate();
+		Query3.run(spark);
 	}
 
 }

@@ -1,8 +1,13 @@
 package utils;
 
+import java.beans.Transient;
 import java.io.IOException;
+import java.io.Serializable;
+import java.util.List;
 
 import org.apache.hadoop.hbase.TableName;
+import org.apache.hadoop.hbase.client.ResultScanner;
+import org.apache.hadoop.hbase.client.Scan;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
@@ -11,6 +16,9 @@ import org.apache.spark.sql.SparkSession;
 import com.google.protobuf.ServiceException;
 
 public class HBaseQueries {
+	/**
+	 * 
+	 */
 	public static final String SEP = "/";
 	public static final String QUERY1_TABLE = "Query1_table";
 	public static final String QUERY2_TABLE = "Query2_table";
@@ -61,62 +69,74 @@ public class HBaseQueries {
 		}
 	}
 	
+	
 	public void query1_hbase() {
 		Dataset<Row> dsResults = HdfsUtility.read(spark, "query1_results.parquet", HdfsUtility.OUTPUT_HDFS+HdfsUtility.QUERY1_DIR);
         JavaRDD<Row> rawResults = dsResults.toJavaRDD();
         
-        rawResults.map(row -> {
-        	hbc.put(QUERY1_TABLE, row.getString(0)+SEP+row.getString(1), COL_FAM_1, MEDIA_VACCINATI, String.valueOf(row.getInt(2)));
+        List<Row> line =  rawResults.collect();
+        for (Row row:line) {
+        	hbc.put(QUERY1_TABLE, row.getString(0)+SEP+row.getString(1), COL_FAM_1, MEDIA_VACCINATI, String.valueOf(row.getLong(2)));
         	hbc.put(QUERY1_TABLE, row.getString(0)+SEP+row.getString(1), COL_FAM_1, AREA, String.valueOf(row.getString(1)));
         	hbc.put(QUERY1_TABLE, row.getString(0)+SEP+row.getString(1), COL_FAM_1, MESE, String.valueOf(row.getString(0)));
+		}
+        
+        /*rawResults.map(row -> {
+        	
         	return null;
-        });
+        });*/
 	}
 	public void query2_hbase() {
 		Dataset<Row> dsResults = HdfsUtility.read(spark, "query2_results.parquet", HdfsUtility.OUTPUT_HDFS+HdfsUtility.QUERY2_DIR);
         JavaRDD<Row> rawResults = dsResults.toJavaRDD();
         
-        rawResults.map(row -> {
+        List<Row> line =  rawResults.collect();
+        for (Row row:line) {
         	hbc.put(QUERY2_TABLE, row.getString(0)+SEP+row.getString(1)+SEP+row.getString(2), COL_FAM_2, PREDIZIONE_VACCINATI, String.valueOf(row.getInt(3)));
         	hbc.put(QUERY2_TABLE, row.getString(0)+SEP+row.getString(1)+SEP+row.getString(2), COL_FAM_2, MESE, String.valueOf(row.getString(0)));
         	hbc.put(QUERY2_TABLE, row.getString(0)+SEP+row.getString(1)+SEP+row.getString(2), COL_FAM_2, FASCIA_ETA, String.valueOf(row.getString(1)));
         	hbc.put(QUERY2_TABLE, row.getString(0)+SEP+row.getString(1)+SEP+row.getString(2), COL_FAM_2, AREA, String.valueOf(row.getString(2)));
-        	return null;
-        });
+        }
+        
 	}
 	
 	public void query3_hbase() {
 		Dataset<Row> dsResults = HdfsUtility.read(spark, "query3_results.parquet", HdfsUtility.OUTPUT_HDFS+HdfsUtility.QUERY3_RESULTS_DIR);
         JavaRDD<Row> rawResults = dsResults.toJavaRDD();
         
-        rawResults.map(row -> {
+        List<Row> line =  rawResults.collect();
+        for (Row row:line) {
         	hbc.put(QUERY3_TABLE_RESULTS, row.getString(0)+SEP+row.getString(1), COL_FAM_3_RESULTS, 
-        			PREDIZIONE_PERCENTUALE_VACCINATI_TOTALE, String.valueOf(row.getInt(2)));
+        			PREDIZIONE_PERCENTUALE_VACCINATI_TOTALE, String.valueOf(row.getDouble(2)));
         	hbc.put(QUERY3_TABLE_RESULTS, row.getString(0)+SEP+row.getString(1), COL_FAM_3_RESULTS, 
         			AREA, String.valueOf(row.getString(0)));
         	hbc.put(QUERY3_TABLE_RESULTS, row.getString(0)+SEP+row.getString(1), COL_FAM_3_RESULTS, 
         			MESE, String.valueOf(row.getString(1)));
-        	return null;
-        });
+        }
         
         Dataset<Row> dsPerformance = HdfsUtility.read(spark, "query3_performance.parquet", HdfsUtility.OUTPUT_HDFS+HdfsUtility.QUERY3_PERFORMANCE_DIR);
         JavaRDD<Row> rawPerformance = dsPerformance.toJavaRDD();
         
-        rawPerformance.map(row -> {
+        line =  rawPerformance.collect();
+        for (Row row:line) {
         	hbc.put(QUERY3_TABLE_PERFORMANCE, row.getString(0)+SEP+String.valueOf(row.getInt(1)), COL_FAM_3_PERFORMANCE, 
-        			PERFORMANCE, String.valueOf(row.getInt(2)));
+        			PERFORMANCE, String.valueOf(row.getLong(2)));
         	hbc.put(QUERY3_TABLE_PERFORMANCE, row.getString(0)+SEP+String.valueOf(row.getInt(1)), COL_FAM_3_PERFORMANCE, 
         			COST, String.valueOf(row.getDouble(3)));
         	hbc.put(QUERY3_TABLE_PERFORMANCE, row.getString(0)+SEP+String.valueOf(row.getInt(1)), COL_FAM_3_PERFORMANCE, 
         			MODEL, String.valueOf(row.getString(0)));
         	hbc.put(QUERY3_TABLE_PERFORMANCE, row.getString(0)+SEP+String.valueOf(row.getInt(1)), COL_FAM_3_PERFORMANCE, 
-        			N_CLUSTER, String.valueOf(row.getString(1)));
-        	return null;
-        });
-        Dataset<Row> dsCluster = HdfsUtility.read(spark, "query3_clusters.parquet", HdfsUtility.OUTPUT_HDFS+HdfsUtility.QUERY3_CLUSTER_DIR);
+        			N_CLUSTER, String.valueOf(row.getInt(1)));
+        }
+        
+        
+        
+        
+        Dataset<Row> dsCluster = HdfsUtility.read(spark, "query3_cluster.parquet", HdfsUtility.OUTPUT_HDFS+HdfsUtility.QUERY3_CLUSTER_DIR);
         JavaRDD<Row> rawCluster = dsCluster.toJavaRDD();
         
-        rawCluster.map(row -> {
+        line =  rawCluster.collect();
+        for (Row row:line) {
         	hbc.put(QUERY3_TABLE_CLUSTER, row.getString(0)+SEP+String.valueOf(row.getInt(1))+SEP+row.getString(2), COL_FAM_3_CLUSTER, 
         			MODEL, String.valueOf(row.getString(0)));
         	hbc.put(QUERY3_TABLE_CLUSTER, row.getString(0)+SEP+String.valueOf(row.getInt(1))+SEP+row.getString(2), COL_FAM_3_CLUSTER, 
@@ -127,8 +147,7 @@ public class HBaseQueries {
         			PREDIZIONE_PERCENTUALE_VACCINATI_TOTALE, String.valueOf(row.getDouble(3)));
         	hbc.put(QUERY3_TABLE_CLUSTER, row.getString(0)+SEP+String.valueOf(row.getInt(1))+SEP+row.getString(2), COL_FAM_3_CLUSTER, 
         			CLUSTER, String.valueOf(row.getInt(4)));
-        	return null;
-        });
+        }
         
         
         

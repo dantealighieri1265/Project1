@@ -43,33 +43,7 @@ public class Query1 {
 	        
 	        Dataset<Row> datasetType = spark.read().option("header","true").parquet("hdfs:"+HdfsUtility.URL_HDFS+":" + 
 	        		HdfsUtility.PORT_HDFS+HdfsUtility.INPUT_HDFS+"/punti-somministrazione-tipologia.parquet");
-	        	        
 
-	        /*datasetSummary.write().format(codec).save("hdfs:"+HdfsUtility.URL_HDFS+":" + 
-	        		HdfsUtility.PORT_HDFS+HdfsUtility.INPUT_HDFS+"/somministrazioni-vaccini-summary-latest.parquet");*/
-	        /*datasetSummary.write().mode(SaveMode.Overwrite).parquet("hdfs:"+HdfsUtility.URL_HDFS+":" + 
-	        		HdfsUtility.PORT_HDFS+HdfsUtility.INPUT_HDFS+"/somministrazioni-vaccini-summary-latest.parquet");
-	        
-	        try {
-				fs = FileSystem.get(new URI("hdfs:"+HdfsUtility.URL_HDFS+":" +HdfsUtility.PORT_HDFS), new Configuration());
-				csv
-				String oldName = fs.globStatus(new Path("/data/somministrazioni-vaccini-summary-latest.parquet/part*.parquet"))[0].getPath().getName();
-				
-				boolean ok = fs.rename(new Path("/data/somministrazioni-vaccini-summary-latest.parquet/"+oldName), new Path("/data/somministrazioni-vaccini-summary-latest1.parquet"));
-				int newName = fs.globStatus(new Path("/data/*.parquet"))[0].getPath().depth();
-				System.out.println(fs.toString()+", "+oldName+", "+ok+", "+newName);
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (URISyntaxException e) {
-				e.printStackTrace();
-			}*/
-	        
-	        
-	       /* Dataset<Row> datasetSummary = spark.read().option("header","true").csv("hdfs:"+HdfsUtility.URL_HDFS+":" + 
-	        		HdfsUtility.PORT_HDFS+HdfsUtility.INPUT_HDFS+"/somministrazioni-vaccini-summary-latest.parquet");
-	        
-	        Dataset<Row> datasetType = spark.read().option("header","true").csv("hdfs:"+HdfsUtility.URL_HDFS+":" + 
-	        		HdfsUtility.PORT_HDFS+HdfsUtility.INPUT_HDFS+"/punti-somministrazione-tipologia.parquet");*/
 	        
 
 	        Instant start = Instant.now();
@@ -132,12 +106,7 @@ public class Query1 {
 	        
 	        Instant end = Instant.now();
 	        System.out.println(("Query completed in " + Duration.between(start, end).toMillis() + "ms"));
-	        //monthAreaTotalPerDay.saveAsTextFile("results");
-	        /*List<Tuple2<Tuple2<String, String>, Long>> line =  monthAreaTotalPerDay.take(10);
 	        
-	        for (Tuple2<Tuple2<String, String>, Long> l:line) {
-				System.out.println(l._1._1 +", "+l._1._2+", "+l._2);
-			}*/
 	        JavaRDD<Row> resultJavaRDD = monthAreaTotalPerDay.map((Function<Tuple2<Tuple2<Month, String>, Long>, Row>) row -> {
 				return RowFactory.create(row._1()._1().name(), row._1()._2(), row._2);
 	        });
@@ -151,6 +120,10 @@ public class Query1 {
 	     // Saving performance results
 	        Dataset<Row> dataset = spark.createDataFrame(resultJavaRDD, resultStruct);
 	        HdfsUtility.write(dataset, HdfsUtility.QUERY1_DIR, SaveMode.Overwrite, false, "query1_results.parquet");
+	        
+	        if (ClassForTest.DEBUG) {
+	        	HdfsUtility.writeForTest(dataset, HdfsUtility.QUERY1_DIR, SaveMode.Overwrite, false, "query1_results.csv");	 
+	        }
 	        /*List<Tuple2<Date, Tuple2<String, String>>> line =  parsedSummary.collect();
 	        for (Tuple2<Date, Tuple2<String, String>> l:line) {
 				System.out.println(l);

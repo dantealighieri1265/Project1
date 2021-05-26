@@ -15,7 +15,9 @@ import utils.HBaseQueries;
 import utils.HdfsUtility;
 
 public class ClassForTest {
-
+	
+	public static final boolean DEBUG = true;
+	
 	public static void main(String[] args) {
 		SparkSession spark = SparkSession
                 .builder()
@@ -23,16 +25,19 @@ public class ClassForTest {
                 .config("spark.master", "local")
                 .getOrCreate();
 		
+		Query1.run(spark);
+		Query2.run(spark);
+		Query3.run(spark);
+		
+		if (DEBUG) return;
+		
 		HBaseQueries hbq = new HBaseQueries(spark);
 		hbq.createTable(HBaseQueries.QUERY1_TABLE, HBaseQueries.COL_FAM_1);
 		hbq.createTable(HBaseQueries.QUERY2_TABLE, HBaseQueries.COL_FAM_2);
 		hbq.createTable(HBaseQueries.QUERY3_TABLE_RESULTS, HBaseQueries.COL_FAM_3_RESULTS);
 		hbq.createTable(HBaseQueries.QUERY3_TABLE_PERFORMANCE, HBaseQueries.COL_FAM_3_PERFORMANCE);
 		hbq.createTable(HBaseQueries.QUERY3_TABLE_CLUSTER, HBaseQueries.COL_FAM_3_CLUSTER);
-				
-		Query1.run(spark);
-		Query2.run(spark);
-		Query3.run(spark);
+		
 		
 		hbq.query1_hbase();
 		hbq.query2_hbase();

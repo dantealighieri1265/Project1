@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.*;
 
-public class HBaseClient implements Serializable{
+public class HBaseClient {
 
     /**
 	 * 
