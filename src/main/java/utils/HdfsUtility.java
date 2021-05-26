@@ -3,6 +3,7 @@ package utils;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SaveMode;
+import org.apache.spark.sql.SparkSession;
 
 public class HdfsUtility {
 	
@@ -28,6 +29,13 @@ public class HdfsUtility {
                .option("header", true)
                .mode(mode)
                .save("hdfs:"+URL_HDFS+":"+PORT_HDFS+OUTPUT_HDFS+queryResults);
+	}
+	
+	public static Dataset<Row> read(SparkSession spark, String fileName) {
+
+		Dataset<Row> dataset = spark.read().option("header","true").parquet("hdfs:"+HdfsUtility.URL_HDFS+":" + 
+        		HdfsUtility.PORT_HDFS+HdfsUtility.INPUT_HDFS+"/"+fileName);
+		return dataset;
 	}
 
 }
