@@ -1,5 +1,8 @@
  package queries;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -8,12 +11,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.math3.stat.regression.SimpleRegression;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.mllib.clustering.KMeans;
 import org.apache.spark.mllib.clustering.KMeansModel;
 import org.apache.spark.mllib.linalg.Vector;
 import org.apache.spark.mllib.linalg.Vectors;
+import org.apache.spark.sql.DataFrameNaFunctions;
+import org.apache.spark.sql.DataFrameReader;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.RowFactory;
@@ -28,12 +36,7 @@ import utils.HdfsUtility;
 
 public class Query3 {
 
-	public static void main(String[] args) {
-		SparkSession spark = SparkSession
-                .builder()
-                .appName("Query3")
-                .config("spark.master", "local")
-                .getOrCreate();
+	public static void run(SparkSession spark) {
 		
 		LocalDate firstJune = LocalDate.parse("2021-06-01", DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 		Dataset<Row> datasetVaccine = spark.read().option("header","true").parquet("hdfs:"+HdfsUtility.URL_HDFS+":" + 
@@ -70,7 +73,11 @@ public class Query3 {
         
         //Preprocessing popolaziojne
         JavaPairRDD<String, Long> population = rawPopulation.mapToPair(row -> {
-        	return new Tuple2<>(row.getString(0), Long.valueOf(row.getInt(1)));
+        	String area = row.getString(0);
+        	if (area.contains("Valle")) {
+				area = "Valle d'Aosta / Vallée d'Aoste";
+			}
+        	return new Tuple2<>(area, Long.valueOf(row.getInt(1)));
         });
 
         //Calcolo vaccini totali al 31 maggio, somma delle predizioni del 1 giugno e calcolo della percentuale
@@ -145,7 +152,7 @@ public class Query3 {
         
      // Saving performance results
         Dataset<Row> dataset_results = spark.createDataFrame(resultJavaRDD, resultStruct);
-        HdfsUtility.write(dataset_results, HdfsUtility.QUERY3_RESULTS_DIR, SaveMode.Overwrite);
+        HdfsUtility.write(dataset_results, HdfsUtility.QUERY3_RESULTS_DIR, SaveMode.Overwrite, false, "query3_results.parquet");
         
         List<StructField> performanceFields = new ArrayList<>();
         performanceFields.add(DataTypes.createStructField("algorithm", DataTypes.StringType, false));
@@ -156,7 +163,7 @@ public class Query3 {
         
      // Saving performance results
         Dataset<Row> dataset_performance = spark.createDataFrame(listPerformance, performanceStruct);
-        HdfsUtility.write(dataset_performance, HdfsUtility.QUERY3_PERFORMANCE_DIR, SaveMode.Overwrite);
+        HdfsUtility.write(dataset_performance, HdfsUtility.QUERY3_PERFORMANCE_DIR, SaveMode.Overwrite, false, "query3_performance.parquet");
         
         List<StructField> clusterResultFields = new ArrayList<>();
         clusterResultFields.add(DataTypes.createStructField("algorithm", DataTypes.StringType, false));
@@ -169,10 +176,14 @@ public class Query3 {
      // Saving performance results
         for (JavaRDD<Row> rdd : listJavaRDD) {
         	Dataset<Row> dataset_cluster = spark.createDataFrame(rdd, clusterResultStruct);
-        	HdfsUtility.write(dataset_cluster, HdfsUtility.QUERY3_CLUSTER_DIR, SaveMode.Append);
+        	HdfsUtility.write(dataset_cluster, HdfsUtility.QUERY3_CLUSTER_DIR+"_Support", SaveMode.Append, false, "_Support");
 		}
         
-        
+        /*Dataset<Row> df= spark.read().parquet("hdfs:"+HdfsUtility.URL_HDFS+":" + 
+        		HdfsUtility.PORT_HDFS+HdfsUtility.OUTPUT_HDFS+HdfsUtility.QUERY3_CLUSTER_DIR+"_Support");*/
+        Dataset<Row>df = HdfsUtility.read(spark, HdfsUtility.QUERY3_CLUSTER_DIR+"_Support", HdfsUtility.OUTPUT_HDFS);
+        Dataset<Row> df_output=df.coalesce(1);
+        HdfsUtility.write(df_output, HdfsUtility.QUERY3_CLUSTER_DIR, SaveMode.Overwrite, true, "query3_cluster.parquet");
         
         
         
@@ -181,8 +192,7 @@ public class Query3 {
 			System.out.println(l);
 		}
         
-        
-        /*List<Tuple2<String, Integer>> line =  areaBelongTo.take(100);
+                /*List<Tuple2<String, Integer>> line =  areaBelongTo.take(100);
         for (Tuple2<String, Integer> l:line) {
 			System.out.println(l);
 		}
@@ -192,6 +202,10 @@ public class Query3 {
 		}*/
         
         //regionAgeMonthRegression.saveAsTextFile("Query3regression");
+	}
+	public static void main(String[] args) {
+		Query3 q3 = new Query3();
+		//q3.run();
 	}
 
 }

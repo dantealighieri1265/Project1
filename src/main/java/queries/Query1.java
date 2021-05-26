@@ -34,21 +34,10 @@ import utils.Query1Comparator;
 
 public class Query1 {
 
-		public static void main(String[] args) {
-			SparkSession spark = SparkSession
-	                .builder()
-	                .appName("Query1")
-	                .config("spark.master", "local")
-	                .getOrCreate();
+		public static void run(SparkSession spark) {
 			
 			LocalDate last_dec = LocalDate.parse("2020-12-31", DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-			final String codec = "parquet";
-			FileSystem fs;
 			
-			
-			
-			
-
 			Dataset<Row> datasetSummary = spark.read().option("header","true").parquet("hdfs:"+HdfsUtility.URL_HDFS+":" + 
 	        		HdfsUtility.PORT_HDFS+HdfsUtility.INPUT_HDFS+"/somministrazioni-vaccini-summary-latest.parquet");
 	        
@@ -91,7 +80,7 @@ public class Query1 {
 	        JavaPairRDD<Tuple2<String, String>, Long> centriCount = rawType.mapToPair((row -> { 
 	        	String area = row.getString(0);
 	        	return new Tuple2<>(new Tuple2<>(area, row.getString(6)), (long) 1);
-	        })).reduceByKey((x, y) -> x+y);
+	        })).reduceByKey((x, y) -> x+y).cache();
 	        
 	        JavaPairRDD<String, Tuple2<String, Long>> centriCountForJoin = centriCount.mapToPair((row -> { 
 	        	return new Tuple2<>(row._1._1, new Tuple2<>(row._1._2, row._2));
@@ -119,7 +108,7 @@ public class Query1 {
 	        //MAp to pair preprocessing for join
 	        JavaPairRDD<String, Tuple2<Month, Long>> monthAreaTotalForJoin = monthAreaTotal.mapToPair(row -> {
 	        	return new Tuple2<> (row._1._2, new Tuple2<>(row._1._1, row._2));
-	        });
+	        }).cache();
 	        
 	        //Join
 	        JavaPairRDD<String, Tuple2<Tuple2<Month, Long>, Tuple2<String, Long>>> monthAreaTotalJoin = monthAreaTotalForJoin.join(centriCountForJoin);
@@ -161,13 +150,20 @@ public class Query1 {
 	        
 	     // Saving performance results
 	        Dataset<Row> dataset = spark.createDataFrame(resultJavaRDD, resultStruct);
-	        HdfsUtility.write(dataset, HdfsUtility.QUERY1_DIR, SaveMode.Overwrite);
+	        HdfsUtility.write(dataset, HdfsUtility.QUERY1_DIR, SaveMode.Overwrite, false, "query1_results.parquet");
 	        /*List<Tuple2<Date, Tuple2<String, String>>> line =  parsedSummary.collect();
 	        for (Tuple2<Date, Tuple2<String, String>> l:line) {
 				System.out.println(l);
 			}*/
 	        
-	        spark.close();
+		}
+		public static void main(String[] args) {
+			SparkSession spark = SparkSession
+	                .builder()
+	                .appName("Test")
+	                .config("spark.master", "local")
+	                .getOrCreate();
+			Query1.run(spark);
 		}
 
 }

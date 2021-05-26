@@ -1,5 +1,12 @@
 package utils;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SaveMode;
@@ -23,18 +30,45 @@ public class HdfsUtility {
 
 	}
 	
-	public static void write(Dataset<Row> dataset, String queryResults, SaveMode mode) {
+	public static void write(Dataset<Row> dataset, String dir, SaveMode mode, boolean multipart, String newName) {
 		dataset.write()
-               .format("parquet")
-               .option("header", true)
-               .mode(mode)
-               .save("hdfs:"+URL_HDFS+":"+PORT_HDFS+OUTPUT_HDFS+queryResults);
+	        .format("parquet")
+	        .option("header", true)
+	        .mode(mode)
+	        .save("hdfs:"+URL_HDFS+":"+PORT_HDFS+OUTPUT_HDFS+dir);
+		FileSystem fs;
+		//final String codec = "parquet";
+		if (mode == SaveMode.Append) {
+			return;
+		}
+		if (multipart) {
+	        try {
+				fs = FileSystem.get(new URI("hdfs:"+HdfsUtility.URL_HDFS+":" +HdfsUtility.PORT_HDFS), new Configuration());
+				fs.delete(new Path(HdfsUtility.OUTPUT_HDFS+HdfsUtility.QUERY3_CLUSTER_DIR+"_Support"), true);
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (URISyntaxException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		try {
+			fs = FileSystem.get(new URI("hdfs:"+HdfsUtility.URL_HDFS+":" +HdfsUtility.PORT_HDFS), new Configuration());			
+			String old = fs.globStatus(new Path(OUTPUT_HDFS+dir+"/part*.parquet"))[0].getPath().getName();
+			fs.rename(new Path(OUTPUT_HDFS+dir+"/"+old), new Path(OUTPUT_HDFS+dir+"/"+newName));
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+		}
 	}
 	
-	public static Dataset<Row> read(SparkSession spark, String fileName) {
+	public static Dataset<Row> read(SparkSession spark, String fileName, String dir) {
+		System.out.println("hdfs:"+HdfsUtility.URL_HDFS+":" + 
+        		dir+"/"+fileName);
 
-		Dataset<Row> dataset = spark.read().option("header","true").parquet("hdfs:"+HdfsUtility.URL_HDFS+":" + 
-        		HdfsUtility.PORT_HDFS+HdfsUtility.INPUT_HDFS+"/"+fileName);
+		Dataset<Row> dataset = spark.read().option("header","true").parquet("hdfs:"+HdfsUtility.URL_HDFS+":" +HdfsUtility.PORT_HDFS+
+        		dir+"/"+fileName);
 		return dataset;
 	}
 

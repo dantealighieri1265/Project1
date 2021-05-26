@@ -11,6 +11,7 @@ import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
 //import org.apache.hadoop.hbase.spark.*;
 
+import utils.HBaseQueries;
 import utils.HdfsUtility;
 
 public class ClassForTest {
@@ -22,7 +23,23 @@ public class ClassForTest {
                 .config("spark.master", "local")
                 .getOrCreate();
 		
-		Dataset<Row> provaParquet = spark.read().parquet("hdfs:"+HdfsUtility.URL_HDFS+":" + 
+		HBaseQueries hbq = new HBaseQueries(spark);
+		hbq.createTable(HBaseQueries.QUERY1_TABLE, HBaseQueries.COL_FAM_1);
+		hbq.createTable(HBaseQueries.QUERY2_TABLE, HBaseQueries.COL_FAM_2);
+		hbq.createTable(HBaseQueries.QUERY3_TABLE_RESULTS, HBaseQueries.COL_FAM_3_RESULTS);
+		hbq.createTable(HBaseQueries.QUERY3_TABLE_PERFORMANCE, HBaseQueries.COL_FAM_3_PERFORMANCE);
+		hbq.createTable(HBaseQueries.QUERY3_TABLE_CLUSTER, HBaseQueries.COL_FAM_3_CLUSTER);
+				
+		Query1.run(spark);
+		Query2.run(spark);
+		Query3.run(spark);
+		
+		hbq.query1_hbase();
+		hbq.query2_hbase();
+		hbq.query3_hbase();
+		
+		//spark.close();
+		/*Dataset<Row> provaParquet = spark.read().parquet("hdfs:"+HdfsUtility.URL_HDFS+":" + 
         		HdfsUtility.PORT_HDFS+HdfsUtility.INPUT_HDFS+"/somministrazioni-vaccini-latest.parquet");
 		JavaRDD<Row> rawParquet = provaParquet.toJavaRDD().cache();
 		List<Row> prova =  rawParquet.take(100);
@@ -35,7 +52,7 @@ public class ClassForTest {
         //JavaHBaseContext hbaseContext = new JavaHBaseContext(jsc, conf); //sembra che lavori solo con rdd
         
         
-        spark.close();
+        spark.close();*/
 
 	}
 

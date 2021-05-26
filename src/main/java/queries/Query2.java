@@ -33,12 +33,7 @@ import utils.Query1Comparator;
 
 public class Query2 {
 
-	public static void main(String[] args) {
-		SparkSession spark = SparkSession
-                .builder()
-                .appName("Query2")
-                .config("spark.master", "local")
-                .getOrCreate();
+	public static void run(SparkSession spark) {
 
         
         Dataset<Row> datasetVaccine = spark.read().option("header","true").parquet("hdfs:"+HdfsUtility.URL_HDFS+":" + 
@@ -181,11 +176,10 @@ public class Query2 {
         
      // Saving performance results
         Dataset<Row> dataset = spark.createDataFrame(resultJavaRDD, resultStruct);
-        HdfsUtility.write(dataset, HdfsUtility.QUERY2_DIR, SaveMode.Overwrite);
+        HdfsUtility.write(dataset, HdfsUtility.QUERY2_DIR, SaveMode.Overwrite, false, "query2_results.parquet");
         
         
         
-        spark.close();
 	}
 
 }

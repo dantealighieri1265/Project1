@@ -9,11 +9,16 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.*;
 
-public class HBaseClient {
+public class HBaseClient implements Serializable{
 
-    /* Configuration Parameters */
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	/* Configuration Parameters */
     private static final String ZOOKEEPER_HOST = "hbase-docker";
     private static final String ZOOKEEPER_PORT = "2181";
     private static final String HBASE_MASTER  = "hbase-docker:16000";
