@@ -36,11 +36,11 @@ public class Query3 {
                 .getOrCreate();
 		
 		LocalDate firstJune = LocalDate.parse("2021-06-01", DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-		Dataset<Row> datasetVaccine = spark.read().option("header","true").csv("hdfs:"+HdfsUtility.URL_HDFS+":" + 
-        		HdfsUtility.PORT_HDFS+HdfsUtility.INPUT_HDFS+"/somministrazioni-vaccini-summary-latest.csv");
+		Dataset<Row> datasetVaccine = spark.read().option("header","true").parquet("hdfs:"+HdfsUtility.URL_HDFS+":" + 
+        		HdfsUtility.PORT_HDFS+HdfsUtility.INPUT_HDFS+"/somministrazioni-vaccini-summary-latest.parquet");
 		
-		Dataset<Row> datasetPopulation = spark.read().option("header","true").csv("hdfs:"+HdfsUtility.URL_HDFS+":" + 
-        		HdfsUtility.PORT_HDFS+HdfsUtility.INPUT_HDFS+"/totale-popolazione.csv");
+		Dataset<Row> datasetPopulation = spark.read().option("header","true").parquet("hdfs:"+HdfsUtility.URL_HDFS+":" + 
+        		HdfsUtility.PORT_HDFS+HdfsUtility.INPUT_HDFS+"/totale-popolazione.parquet");
 		
         Instant start = Instant.now();
         JavaRDD<Row> rawVaccine = datasetVaccine.toJavaRDD().cache();
@@ -49,7 +49,7 @@ public class Query3 {
         //Raggruppamento per area e ordinamento sull'area
         JavaPairRDD<String, Iterable<Tuple2<LocalDate, Long>>> groupByAreaSorted = rawVaccine.mapToPair(row -> {
         	LocalDate date = LocalDate.parse(row.getString(0), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        	return new Tuple2<>(row.getString(row.length()-1), new Tuple2<>(date, Long.valueOf(row.getString(2))));
+        	return new Tuple2<>(row.getString(row.length()-1), new Tuple2<>(date, Long.valueOf(row.getInt(2))));
         }).groupByKey().cache();
         
         //Regressione e predizione al 1 giugno per area
@@ -70,13 +70,13 @@ public class Query3 {
         
         //Preprocessing popolaziojne
         JavaPairRDD<String, Long> population = rawPopulation.mapToPair(row -> {
-        	return new Tuple2<>(row.getString(0), Long.valueOf(row.getString(1)));
+        	return new Tuple2<>(row.getString(0), Long.valueOf(row.getInt(1)));
         });
 
         //Calcolo vaccini totali al 31 maggio, somma delle predizioni del 1 giugno e calcolo della percentuale
         //di popolazione vaccinata
         JavaPairRDD<Tuple2<String, String>, Double> predictionPercentage = rawVaccine.mapToPair(row -> {
-        	return new Tuple2<>(row.getString(row.length()-1), Long.valueOf(row.getString(2)));
+        	return new Tuple2<>(row.getString(row.length()-1), Long.valueOf(row.getInt(2)));
         }).reduceByKey((x, y) -> (x+y)).mapToPair(row -> {
         	return new Tuple2<>(row._1(), row._2());
         }).join(areaRegression).mapToPair(row -> {

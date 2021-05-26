@@ -47,22 +47,23 @@ public class Query1 {
 			
 			
 			
+			
 
-			Dataset<Row> datasetSummary = spark.read().option("header","true").csv("hdfs:"+HdfsUtility.URL_HDFS+":" + 
-	        		HdfsUtility.PORT_HDFS+HdfsUtility.INPUT_HDFS+"/somministrazioni-vaccini-summary-latest.csv");
+			Dataset<Row> datasetSummary = spark.read().option("header","true").parquet("hdfs:"+HdfsUtility.URL_HDFS+":" + 
+	        		HdfsUtility.PORT_HDFS+HdfsUtility.INPUT_HDFS+"/somministrazioni-vaccini-summary-latest.parquet");
 	        
-	        Dataset<Row> datasetType = spark.read().option("header","true").csv("hdfs:"+HdfsUtility.URL_HDFS+":" + 
-	        		HdfsUtility.PORT_HDFS+HdfsUtility.INPUT_HDFS+"/punti-somministrazione-tipologia.csv");
+	        Dataset<Row> datasetType = spark.read().option("header","true").parquet("hdfs:"+HdfsUtility.URL_HDFS+":" + 
+	        		HdfsUtility.PORT_HDFS+HdfsUtility.INPUT_HDFS+"/punti-somministrazione-tipologia.parquet");
 	        	        
 
 	        /*datasetSummary.write().format(codec).save("hdfs:"+HdfsUtility.URL_HDFS+":" + 
 	        		HdfsUtility.PORT_HDFS+HdfsUtility.INPUT_HDFS+"/somministrazioni-vaccini-summary-latest.parquet");*/
-	        datasetSummary.write().mode(SaveMode.Overwrite).parquet("hdfs:"+HdfsUtility.URL_HDFS+":" + 
+	        /*datasetSummary.write().mode(SaveMode.Overwrite).parquet("hdfs:"+HdfsUtility.URL_HDFS+":" + 
 	        		HdfsUtility.PORT_HDFS+HdfsUtility.INPUT_HDFS+"/somministrazioni-vaccini-summary-latest.parquet");
 	        
 	        try {
 				fs = FileSystem.get(new URI("hdfs:"+HdfsUtility.URL_HDFS+":" +HdfsUtility.PORT_HDFS), new Configuration());
-				
+				csv
 				String oldName = fs.globStatus(new Path("/data/somministrazioni-vaccini-summary-latest.parquet/part*.parquet"))[0].getPath().getName();
 				
 				boolean ok = fs.rename(new Path("/data/somministrazioni-vaccini-summary-latest.parquet/"+oldName), new Path("/data/somministrazioni-vaccini-summary-latest1.parquet"));
@@ -72,7 +73,7 @@ public class Query1 {
 				e.printStackTrace();
 			} catch (URISyntaxException e) {
 				e.printStackTrace();
-			}
+			}*/
 	        
 	        
 	       /* Dataset<Row> datasetSummary = spark.read().option("header","true").csv("hdfs:"+HdfsUtility.URL_HDFS+":" + 
@@ -102,7 +103,7 @@ public class Query1 {
 	        //Sort somministrazioni-vaccini-latest
 	        JavaPairRDD<LocalDate, Tuple2<String, Long>> parsedSummary = rawSummary.mapToPair((row -> {
 	            LocalDate date = LocalDate.parse(row.getString(0), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-	            return new Tuple2<>(date, new Tuple2<>(row.getString(1), Long.valueOf(row.getString(2))));
+	            return new Tuple2<>(date, new Tuple2<>(row.getString(1), Long.valueOf(row.getInt(2))));
 	        })).filter(row -> {
 	        	return row._1.isAfter(last_dec);
 	        }).sortByKey(true);

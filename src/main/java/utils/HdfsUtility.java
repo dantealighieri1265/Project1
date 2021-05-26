@@ -24,7 +24,7 @@ public class HdfsUtility {
 	
 	public static void write(Dataset<Row> dataset, String queryResults, SaveMode mode) {
 		dataset.write()
-               .format("csv")
+               .format("parquet")
                .option("header", true)
                .mode(mode)
                .save("hdfs:"+URL_HDFS+":"+PORT_HDFS+OUTPUT_HDFS+queryResults);

@@ -36,16 +36,20 @@ public class Query2 {
 	public static void main(String[] args) {
 		SparkSession spark = SparkSession
                 .builder()
-                .appName("Query1")
+                .appName("Query2")
                 .config("spark.master", "local")
                 .getOrCreate();
 
         
-        Dataset<Row> datasetVaccine = spark.read().option("header","true").csv("hdfs:"+HdfsUtility.URL_HDFS+":" + 
-        		HdfsUtility.PORT_HDFS+HdfsUtility.INPUT_HDFS+"/somministrazioni-vaccini-latest.csv");
+        Dataset<Row> datasetVaccine = spark.read().option("header","true").parquet("hdfs:"+HdfsUtility.URL_HDFS+":" + 
+        		HdfsUtility.PORT_HDFS+HdfsUtility.INPUT_HDFS+"/somministrazioni-vaccini-latest.parquet");
         
         Instant start = Instant.now();
         JavaRDD<Row> rawVaccine = datasetVaccine.toJavaRDD();
+        List<Row> linePqrquet =  rawVaccine.take(100);
+        for (Row l:linePqrquet) {
+			System.out.println(l);
+		}
         
         //Eliminiamo i valori precedenti a Febbraio
         JavaRDD<Row> selectRow = rawVaccine.filter(row ->{
@@ -60,7 +64,7 @@ public class Query2 {
         //Sommiamo i vaccini di marche diverse: [Data, Area, Age][vaccini]
         JavaPairRDD<Tuple3<LocalDate, String, String>, Long> sumOvervaccine = selectRow.mapToPair(row -> {
         	LocalDate date = LocalDate.parse(row.getString(0), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        	return new Tuple2<>(new Tuple3<>(date, row.getString(row.length()-1), row.getString(3)), Long.valueOf(row.getString(5)));
+        	return new Tuple2<>(new Tuple3<>(date, row.getString(row.length()-1), row.getString(3)), Long.valueOf(row.getInt(5)));
         }).reduceByKey((x, y)-> x+y);
         
         //Sort by Date

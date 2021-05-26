@@ -9,7 +9,7 @@ import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
-import org.apache.hadoop.hbase.spark.*;
+//import org.apache.hadoop.hbase.spark.*;
 
 import utils.HdfsUtility;
 
@@ -23,7 +23,7 @@ public class ClassForTest {
                 .getOrCreate();
 		
 		Dataset<Row> provaParquet = spark.read().parquet("hdfs:"+HdfsUtility.URL_HDFS+":" + 
-        		HdfsUtility.PORT_HDFS+HdfsUtility.INPUT_HDFS+"/totale-popolazione.parquet");
+        		HdfsUtility.PORT_HDFS+HdfsUtility.INPUT_HDFS+"/somministrazioni-vaccini-latest.parquet");
 		JavaRDD<Row> rawParquet = provaParquet.toJavaRDD().cache();
 		List<Row> prova =  rawParquet.take(100);
         for (Row l:prova) {
@@ -32,7 +32,7 @@ public class ClassForTest {
         
         Configuration conf = HBaseConfiguration.create();
         JavaSparkContext jsc = new JavaSparkContext(spark.sparkContext());
-        JavaHBaseContext hbaseContext = new JavaHBaseContext(jsc, conf); //sembra che lavori solo con rdd
+        //JavaHBaseContext hbaseContext = new JavaHBaseContext(jsc, conf); //sembra che lavori solo con rdd
         
         
         spark.close();
