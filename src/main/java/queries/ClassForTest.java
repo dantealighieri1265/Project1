@@ -23,7 +23,7 @@ public class ClassForTest {
                 .builder()
                 .appName("Test")
                 .config("spark.master", "local")
-                .getOrCreate();
+                .getOrCreate(); 
 		
 		Query1.run(spark);
 		Query2.run(spark);
