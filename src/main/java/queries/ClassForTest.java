@@ -1,6 +1,7 @@
 package queries;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
@@ -22,9 +23,16 @@ public class ClassForTest {
 		SparkSession spark = SparkSession
                 .builder()
                 .appName("Test")
-                .config("spark.master", "local")
-                .getOrCreate(); 
+                .config("spark.master", "local").config("spark.cores.max", 6).getOrCreate(); 
 		
+		System.out.println("Wait Spark Initialization...");
+		try {
+			TimeUnit.SECONDS.sleep(10);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
+		System.out.println("Go!");
 		Query1.run(spark);
 		Query2.run(spark);
 		Query3.run(spark);
