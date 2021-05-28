@@ -38,22 +38,6 @@ public class Query2 {
 	
 	private static LocalDate FIRST_FEBRUARY = LocalDate.parse("2021-02-01", DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 	
-	public static List<LocalDate> fillNa(LocalDate prevDay, LocalDate actualDay) {
-		List<LocalDate> list = new ArrayList<LocalDate>();
-		
-		long daysBetween = ChronoUnit.DAYS.between(prevDay, actualDay);
-		
-		
-		if(daysBetween > 1) {
-			//ci sono righe mancanti
-			for (int i = 0; i < daysBetween-1; i++) {
-				list.add(prevDay.plusDays(i+1));
-			}
-			
-		}
-		
-		return list;	
-	}
 
 	public static void run(SparkSession spark) {
 
@@ -121,30 +105,14 @@ public class Query2 {
         	/*Controlla che, per ogni fascia d'età, mese e regione, ci siano almeno due giorni 
         	 * in cui almeno una donna è stata vaccinata*/
         	for(Tuple2<LocalDate, Long> vaccineDay : dayVaccines) {
-        		/*if (firstLap) {
-            		monthOld = vaccineDay._1.getMonthValue();
-            		//prevDay = LocalDate.of(2021, monthOld, 1);
-            		
-            		//System.out.println(dayVaccine._1.getMonth().name());
-        		}*/
+
         		listSupport.add(new Tuple2<>(new Tuple3<>((String)row._1._1, (String)row._1._2, vaccineDay._1().getMonth().name()), 
     					new Tuple2<>(Integer.valueOf(vaccineDay._1().getDayOfYear()), vaccineDay._2)));
-        		       		
-        		
         		if (firstLap) {
-        			//monthOld = month;
-        			
-        			/*LocalDate actualDay = dayVaccine._1;
-        			List<LocalDate> dayNoVaccineWoman = fillNa(prevDay, actualDay);
-        			for (LocalDate dayNo : dayNoVaccineWoman) {
-        				listSupport.add(new Tuple2<>(new Tuple3<>((String)row._1._1, (String)row._1._2, dayVaccine._1().getMonth().name()), 
-            					new Tuple2<>(Integer.valueOf(dayNo.getDayOfYear()), Long.valueOf(0))));
-					}
-        			prevDay = actualDay;*/
-        			
+
             		monthOld = vaccineDay._1.getMonthValue();
             		/*Per il primo giorno devo controlare che */
-        			//vaccinationDaysPerMonth++;
+
         			if (vaccineDay._2 != 0) {
         				n_vaccinationsDays++;
         			}
@@ -157,21 +125,8 @@ public class Query2 {
         			if (vaccineDay._2 != 0) {
             			n_vaccinationsDays++;
         			}
-        			/*FillNa for regression*/
-        			/*LocalDate actualDay = dayVaccine._1;
-        			List<LocalDate> dayNoVaccineWoman = fillNa(prevDay, actualDay);
-        			for (LocalDate dayNo : dayNoVaccineWoman) {
-        				listSupport.add(new Tuple2<>(new Tuple3<>((String)row._1._1, (String)row._1._2, dayVaccine._1().getMonth().name()), 
-            					new Tuple2<>(Integer.valueOf(dayNo.getDayOfYear()), Long.valueOf(0))));
-					}
-        			prevDay = actualDay;*/
-        			
-        			/*if (vaccineDay._2 != 0) {
-        				ckeckNoZeroWomanPerMonth++;
-        			}
-        			vaccinationDaysPerMonth++;*/
+
         		}else {
-        			//System.out.println(n_vaccinationsDays+", "+vaccineDay._1.toString()+", "+row._1._1+", "+ vaccineDay._1.getMonth().name()+", "+row._1._2);
 					if (n_vaccinationsDays >= 2) {
 						list.addAll(listSupport);
 					}else {
@@ -184,8 +139,7 @@ public class Query2 {
 					if (vaccineDay._2 != 0) {
         				n_vaccinationsDays++;
         			}
-					/*vaccinationDaysPerMonth = 0;
-					ckeckNoZeroWomanPerMonth = 0;*/
+
 				}
         		monthOld = month;
         	}

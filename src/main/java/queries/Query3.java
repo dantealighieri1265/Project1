@@ -22,6 +22,7 @@ import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.StructField;
 import org.apache.spark.sql.types.StructType;
+import org.spark_project.guava.collect.Iterables;
 
 import scala.Tuple2;
 import utils.HdfsUtility;
@@ -36,7 +37,8 @@ public class Query3 {
 		
 		Dataset<Row> datasetPopulation = spark.read().option("header","true").parquet("hdfs:"+HdfsUtility.URL_HDFS+":" + 
         		HdfsUtility.PORT_HDFS+HdfsUtility.INPUT_HDFS+"/totale-popolazione.parquet");
-		
+		datasetVaccine.toJavaRDD().collect();
+		//TODO fill dei dati per regressione al 1 giugno
         Instant start = Instant.now();
         JavaRDD<Row> rawVaccine = datasetVaccine.toJavaRDD().cache();
         JavaRDD<Row> rawPopulation = datasetPopulation.toJavaRDD().cache();
@@ -186,9 +188,9 @@ public class Query3 {
         
         
         
-        List<Tuple2<Tuple2<String, String>, Double>> line2 =  predictionPercentage.take(100);
-        for (Tuple2<Tuple2<String, String>, Double> l:line2) {
-			System.out.println(l);
+        List<Tuple2<String, Iterable<Tuple2<LocalDate, Long>>>> line2 =  groupByAreaSorted.collect();
+        for (Tuple2<String, Iterable<Tuple2<LocalDate, Long>>> l:line2) {
+			System.out.println(l +", "+ Iterables.size(l._2()));
 		}
         
         if (ClassForTest.DEBUG) {

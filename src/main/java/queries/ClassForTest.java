@@ -19,7 +19,7 @@ public class ClassForTest {
                 .builder()
                 .appName("Test")
                 .config("spark.master", "local")
-                .config("spark.cores.max", 6)
+                .config("spark.cores.max", 12)
                 .getOrCreate(); 
 		
 		Query1.run(spark);
