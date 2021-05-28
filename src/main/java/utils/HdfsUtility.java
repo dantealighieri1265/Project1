@@ -28,7 +28,6 @@ public class HdfsUtility {
 	public final static String QUERY3_CLUSTER_DIR = "/Query3_cluster";
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 
 	}
 	

@@ -48,7 +48,6 @@ public class HBaseQueries {
 	public static final String N_CLUSTER = "n_cluster";
 	
 	public HBaseQueries(SparkSession spark) {
-		// TODO Auto-generated constructor stub;
 		this.spark = spark;
 	}
 	
@@ -168,7 +167,6 @@ public class HBaseQueries {
 			hbc.put("query1", "row2", "query1_family", "mese", "gennaio", "query1_family", "area", "Basilicata", "query1_family", "num_vacc", "16");
 			hbc.put("query1", "row1", "query1_family", "mese", "gennaio", "query1_family", "area", "Basilicata", "query1_family", "num_vacc", "15");
 		} catch (IOException | ServiceException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		System.out.println(hbc.get("query1", "row2", "query1_family", "num_vacc"));

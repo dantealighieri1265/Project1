@@ -6,6 +6,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.Month;
+import java.time.Year;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -89,19 +90,12 @@ public class Query1 {
 
 	       
 	        //final result
-	        @SuppressWarnings("unlikely-arg-type")
 			JavaPairRDD<Tuple2<Month, String>, Long> monthAreaTotalPerDay = monthAreaTotalJoin.mapToPair((row -> {
 	            Month month = row._2._1._1;
-	            int[] i = {1, 3, 5, 7, 8, 10, 12};
-	            Long nDay = (long) 0;
-	            if (Arrays.asList(i).contains(month.getValue())) {
-	            	nDay = (long) 31;
-	            }else if (month.getValue() == 2){
-	            	nDay = (long) 28;
-				}else {
-					nDay = (long) 30;
-				}
-	            return new Tuple2<>(new Tuple2<>(month, row._2._2._1), row._2._1._2/(nDay*row._2._2._2));
+	            LocalDate date = LocalDate.of(Year.now().getValue(), month, 1);
+	            int lenghtOfMonth = date.lengthOfMonth();
+	            
+	            return new Tuple2<>(new Tuple2<>(month, row._2._2._1), row._2._1._2/(lenghtOfMonth*row._2._2._2));
 	        })).sortByKey(new Query1Comparator<Month, String>(Comparator.<Month>naturalOrder(), Comparator.<String>naturalOrder()));
 	        
 	        Instant end = Instant.now();
@@ -135,6 +129,7 @@ public class Query1 {
 	                .builder()
 	                .appName("Test")
 	                .config("spark.master", "local")
+	                .config("spark.cores.max", 6)
 	                .getOrCreate();
 			Query1.run(spark);
 		}

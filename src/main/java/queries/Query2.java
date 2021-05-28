@@ -8,7 +8,6 @@ import java.time.Year;
 import java.time.temporal.ChronoUnit;
 
 import org.apache.commons.math3.stat.regression.SimpleRegression;
-import org.apache.hadoop.classification.InterfaceAudience.Public;
 
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -26,7 +25,9 @@ import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.StructField;
 import org.apache.spark.sql.types.StructType;
+//import org.spark_project.guava.collect.Iterables;
 
+import avro.shaded.com.google.common.collect.Iterables;
 import scala.Tuple2;
 import scala.Tuple3;
 import utils.Query2Comparator;
@@ -60,12 +61,15 @@ public class Query2 {
         Dataset<Row> datasetVaccine = spark.read().option("header","true").parquet("hdfs:"+HdfsUtility.URL_HDFS+":" + 
         		HdfsUtility.PORT_HDFS+HdfsUtility.INPUT_HDFS+"/somministrazioni-vaccini-latest.parquet");
         
+        //TODO FAI QUALCOSA
+        datasetVaccine.toJavaRDD().collect();
+        
         Instant start = Instant.now();
         JavaRDD<Row> rawVaccine = datasetVaccine.toJavaRDD();
-        List<Row> linePqrquet =  rawVaccine.take(100);
+        /*List<Row> linePqrquet =  rawVaccine.take(100);
         for (Row l:linePqrquet) {
 			System.out.println(l);
-		}
+		}*/
         
         //Eliminiamo i valori precedenti a Febbraio
         JavaRDD<Row> selectRow = rawVaccine.filter(row ->{
@@ -90,44 +94,44 @@ public class Query2 {
         	return new Tuple2<>(row._1._1(), new Tuple3<>(row._1._2(), row._1._3(), row._2));
         }).sortByKey();
         
-        // (AREA, AGE)[(DATE, VACCINI)...]
+        // (AREA, FASCIA ETA)[(DATE, VACCINI)...]
         JavaPairRDD<Tuple2<String, String>, Iterable<Tuple2<LocalDate, Long>>> regionAge = sumOvervaccineSort.mapToPair(row -> {
         	return new Tuple2<>(new Tuple2<>(row._2._1(), row._2._2()), new Tuple2<>(row._1, row._2._3()));
         }).groupByKey();
         
         
         
-        //[mese, fascia, area, ][[data, vaccinati],...]
+        //[AREA, FASCIA ETA, MESE][[data, vaccinati],...]
         JavaPairRDD<Tuple3<String, String, String>, Iterable<Tuple2<Integer, Long>>> regionAgeMonth = regionAge.flatMapToPair((PairFlatMapFunction<Tuple2<Tuple2<String, String>, 
         		Iterable<Tuple2<LocalDate, Long>>>, Tuple3<String, String, String>,  Tuple2<Integer, Long>>) row -> {
         			
         	Iterable<Tuple2<LocalDate, Long>> dayVaccines = row._2;
         	ArrayList<Tuple2<Tuple3<String, String, String>, Tuple2<Integer, Long>>> list = new ArrayList<>();
         	ArrayList<Tuple2<Tuple3<String, String, String>, Tuple2<Integer, Long>>> listSupport = new ArrayList<>();
-        	int check = 0; 
-        	int flag = 0;
+        	//int vaccinationDaysPerMonth = 0; 
+        	boolean firstLap = true;
         	int monthOld = 0;
-        	LocalDate prevDay = null;
+        	//LocalDate prevDay = null;
         	
-        	/*Controlla quanti giorni, considerato un mese specifico, una fascia specifica e 
-        	 * una regione specifica, sono state effettuate almeno una vaccinazione ad una donna*/
-        	int ckeckNoZeroWoman = 0; 
-        	for(Tuple2<LocalDate, Long> dayVaccine : dayVaccines) {
-        		if (flag == 0) {
-            		monthOld = dayVaccine._1.getMonthValue();
+        	/*Controlla in quanti giorni, considerato un mese specifico, una fascia specifica e 
+        	 * una regione specifica, è stata effettuate almeno una vaccinazione ad una donna*/
+        	//int ckeckNoZeroWomanPerMonth = 0; 
+        	int n_vaccinationsDays = 0;
+        	
+        	/*Controlla che, per ogni fascia d'età, mese e regione, ci siano almeno due giorni 
+        	 * in cui almeno una donna è stata vaccinata*/
+        	for(Tuple2<LocalDate, Long> vaccineDay : dayVaccines) {
+        		/*if (firstLap) {
+            		monthOld = vaccineDay._1.getMonthValue();
             		//prevDay = LocalDate.of(2021, monthOld, 1);
             		
             		//System.out.println(dayVaccine._1.getMonth().name());
-        		}
-        		
-            	int month = dayVaccine._1.getMonthValue();
-        		
-        		
-        		listSupport.add(new Tuple2<>(new Tuple3<>((String)row._1._1, (String)row._1._2, dayVaccine._1().getMonth().name()), 
-    					new Tuple2<>(Integer.valueOf(dayVaccine._1().getDayOfYear()), dayVaccine._2)));
+        		}*/
+        		listSupport.add(new Tuple2<>(new Tuple3<>((String)row._1._1, (String)row._1._2, vaccineDay._1().getMonth().name()), 
+    					new Tuple2<>(Integer.valueOf(vaccineDay._1().getDayOfYear()), vaccineDay._2)));
         		       		
         		
-        		if (flag ==0) {
+        		if (firstLap) {
         			//monthOld = month;
         			
         			/*LocalDate actualDay = dayVaccine._1;
@@ -138,12 +142,21 @@ public class Query2 {
 					}
         			prevDay = actualDay;*/
         			
-        			flag++;
-        			check++;
+            		monthOld = vaccineDay._1.getMonthValue();
+            		/*Per il primo giorno devo controlare che */
+        			//vaccinationDaysPerMonth++;
+        			if (vaccineDay._2 != 0) {
+        				n_vaccinationsDays++;
+        			}
+        			firstLap = false;
         			continue;
         		}
+        		int month = vaccineDay._1.getMonthValue();
         		
         		if (month == monthOld) {
+        			if (vaccineDay._2 != 0) {
+            			n_vaccinationsDays++;
+        			}
         			/*FillNa for regression*/
         			/*LocalDate actualDay = dayVaccine._1;
         			List<LocalDate> dayNoVaccineWoman = fillNa(prevDay, actualDay);
@@ -153,45 +166,85 @@ public class Query2 {
 					}
         			prevDay = actualDay;*/
         			
-        			if (dayVaccine._2 != 0) {
-        				ckeckNoZeroWoman++;
+        			/*if (vaccineDay._2 != 0) {
+        				ckeckNoZeroWomanPerMonth++;
         			}
-        			check++;
+        			vaccinationDaysPerMonth++;*/
         		}else {
-        			System.out.println(check+", "+dayVaccine._1.toString()+", "+row._1._1+", "+ dayVaccine._1.getMonth().name()+", "+row._1._2);
-					if (check>=2 && ckeckNoZeroWoman>=2) {
+        			//System.out.println(n_vaccinationsDays+", "+vaccineDay._1.toString()+", "+row._1._1+", "+ vaccineDay._1.getMonth().name()+", "+row._1._2);
+					if (n_vaccinationsDays >= 2) {
 						list.addAll(listSupport);
 					}else {
 						System.out.println("FASCIA DA NON CONSIDERARE: "+row.toString());
 					}
 					listSupport.clear();
-					check = 0;
+					n_vaccinationsDays = 0;
+					
+					/*Controlla che nel primo giorno diposnibile del primo mese sia stato effettuato almeno un vaccino*/
+					if (vaccineDay._2 != 0) {
+        				n_vaccinationsDays++;
+        			}
+					/*vaccinationDaysPerMonth = 0;
+					ckeckNoZeroWomanPerMonth = 0;*/
 				}
         		monthOld = month;
         	}
         	
         	
-        	/*Per l'ultimo mese considerato*/
-        	//System.out.println(check+", "+dayVaccine._1.toString()+", "+row._1._1+", "+ dayVaccine._1.getMonth().name()+", "+row._1._2);
-			if (check>=2 && ckeckNoZeroWoman>=2) {
+        	/*Stessi controlli anche per l'ultimo mese della lista*/
+			if (n_vaccinationsDays>=2) {
 				list.addAll(listSupport);
 			}else {
 				System.out.println("FASCIA DA NON CONSIDERARE: "+row.toString());
 			}
-			System.out.println(listSupport.get(1).toString());
-			listSupport.clear();
-			check = 0;
-			
+			listSupport.clear();		
 			
         	return list.iterator();  	
         }).groupByKey();
         
-        //TODO
         /*Map in cui giriamo per un dato mese, tutti i giorni che sono presenti nel dataset, avendo cura di aggiungere i giorni mancanti e settare il numero di vaccini a 0*/
+        JavaPairRDD<Tuple3<String, String, String>, Iterable<Tuple2<Integer, Long>>> regionAgeMonthFill = regionAgeMonth.mapToPair(row -> {
+        	List<Tuple2<Integer, Long>> list = new ArrayList<Tuple2<Integer, Long>>();
+        	Iterable<Tuple2<Integer, Long>> vaccineDaysPerMonth = row._2;
+        	
+        	LocalDate day =  Year.now().atDay(vaccineDaysPerMonth.iterator().next()._1);
+        	
+        	int lenghtOfMonth = day.lengthOfMonth();
+        	int month = day.getMonth().getValue();
+        	//System.out.println("LUNGHEZZA MESE: "+lenghtOfMonth);
+        	
+        	for (int i = lenghtOfMonth; i > 0; i--) {
+        		
+        		
+    			LocalDate dayOfMonth = LocalDate.of(Year.now().getValue(), month, i);
+    			int dayOfYear = dayOfMonth.getDayOfYear();
+        		boolean find = false;
+        		
+        		for (Tuple2<Integer, Long> line : vaccineDaysPerMonth) {
+        			if (line._1 == dayOfYear) {
+        				find = true;
+						break;
+					}
+				}
+        		if (!find) {
+            		list.add(new Tuple2<Integer, Long>(dayOfYear, Long.valueOf(0)));
+        		}
+        		
+			}
+        	//System.out.println(list+"\n"+vaccineDaysPerMonth.toString()+"\n-------------------");
+        	Iterables.addAll(list, vaccineDaysPerMonth);
+        	return new Tuple2<>(new Tuple3<String, String, String>(row._1._1(), row._1._2(), row._1._3()), vaccineDaysPerMonth);
+        	
+        });
+        
+        /*List<Tuple2<Tuple3<String, String, String>, Iterable<Tuple2<Integer, Long>>>> line3 =  regionAgeMonthFill.take(100);
+        for (Tuple2<Tuple3<String, String, String>, Iterable<Tuple2<Integer, Long>>> l:line3) {
+			System.out.println(l);
+		}*/
         
         
         // (DATE, AGE, AREA)[(VACCINI)...]
-        JavaPairRDD<Tuple3<Month, String, String>, Integer> regionAgeMonthRegression = regionAgeMonth.mapToPair(row -> {
+        JavaPairRDD<Tuple3<Month, String, String>, Integer> regionAgeMonthRegression = regionAgeMonthFill.mapToPair(row -> {
         	SimpleRegression regression = new SimpleRegression();
         	int last = 0;
         	for (Tuple2<Integer, Long> point: row._2) {
@@ -234,10 +287,10 @@ public class Query2 {
         Instant end = Instant.now();
         System.out.println(("Query 2 completed in " + Duration.between(start, end).toMillis() + "ms"));
         
-        List<Tuple2<Tuple3<String, String, String>, Integer>> line3 =  result.take(100);
-        for (Tuple2<Tuple3<String, String, String>, Integer> l:line3) {
+        /*List<Tuple2<Tuple3<String, String, String>, Integer>> prova =  result.take(100);
+        for (Tuple2<Tuple3<String, String, String>, Integer> l:prova) {
 			System.out.println(l);
-		}
+		}*/
         
         //result.saveAsTextFile("Query2");
         JavaRDD<Row> resultJavaRDD = result.map(row -> {
@@ -263,13 +316,17 @@ public class Query2 {
                 .builder()
                 .appName("Test")
                 .config("spark.master", "local")
+                .config("spark.cores.max", 6)
                 .getOrCreate();
-		LocalDate prevDay = LocalDate.parse("2021-02-01", DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+		Query2.run(spark);
+		/*LocalDate prevDay = LocalDate.parse("2021-02-01", DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 		LocalDate actualDay = LocalDate.parse("2021-02-03", DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 		long daysBetween = ChronoUnit.DAYS.between(prevDay, actualDay);
 		System.out.println(daysBetween);
-		System.out.println(prevDay = LocalDate.of(2021, 1, 1));
-		//Query2.run(spark);
+		int i = 32;
+    	LocalDate day =  Year.now().atDay(i);
+    	System.out.println(day.lengthOfMonth());*/
+		
 	}
 
 }

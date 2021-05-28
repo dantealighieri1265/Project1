@@ -1,8 +1,5 @@
  package queries;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -11,17 +8,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.math3.stat.regression.SimpleRegression;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.Path;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.mllib.clustering.KMeans;
 import org.apache.spark.mllib.clustering.KMeansModel;
 import org.apache.spark.mllib.linalg.Vector;
 import org.apache.spark.mllib.linalg.Vectors;
-import org.apache.spark.sql.DataFrameNaFunctions;
-import org.apache.spark.sql.DataFrameReader;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.RowFactory;
@@ -97,11 +89,13 @@ public class Query3 {
         });
         //clustering
         
+        //TODO Per eliminare il costo di inizializzazione metterlo all'inzio
+        
         JavaRDD<Vector> training = predictionPercentage.map(row -> {
         	return Vectors.dense(row._2());
         }).cache();
         
-        KMeansModel cluster3 = KMeans.train(training.rdd(), 3, 100); // Per eliminare il costo di inizializzazione
+        KMeansModel cluster3 = KMeans.train(training.rdd(), 3, 100); 
         ArrayList<Row> listRDD = new ArrayList<>(); 
         ArrayList<Row> listPerformance = new ArrayList<>();
         ArrayList<JavaRDD<Row>> listJavaRDD = new ArrayList<>();
