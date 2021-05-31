@@ -22,7 +22,6 @@ import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.StructField;
 import org.apache.spark.sql.types.StructType;
-import org.spark_project.guava.collect.Iterables;
 
 import scala.Tuple2;
 import utils.HdfsUtility;
@@ -98,7 +97,6 @@ public class Query3 {
         }).cache();
         
         KMeansModel cluster3 = KMeans.train(training.rdd(), 3, 100); 
-        ArrayList<Row> listRDD = new ArrayList<>(); 
         ArrayList<Row> listPerformance = new ArrayList<>();
         ArrayList<JavaRDD<Row>> listJavaRDD = new ArrayList<>();
         
@@ -188,10 +186,10 @@ public class Query3 {
         
         
         
-        List<Tuple2<String, Iterable<Tuple2<LocalDate, Long>>>> line2 =  groupByAreaSorted.collect();
+        /*List<Tuple2<String, Iterable<Tuple2<LocalDate, Long>>>> line2 =  groupByAreaSorted.collect();
         for (Tuple2<String, Iterable<Tuple2<LocalDate, Long>>> l:line2) {
 			System.out.println(l +", "+ Iterables.size(l._2()));
-		}
+		}*/
         
         if (ClassForTest.DEBUG) {
             HdfsUtility.writeForTest(dataset_performance, HdfsUtility.QUERY3_PERFORMANCE_DIR, SaveMode.Overwrite, false, "query3_performance.csv");

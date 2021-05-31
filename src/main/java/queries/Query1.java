@@ -46,7 +46,7 @@ public class Query1 {
 	        
 	        JavaPairRDD<Tuple2<String, String>, Long> centriCount = rawType.mapToPair((row -> { 
 	        	String area = row.getString(0);
-	        	return new Tuple2<>(new Tuple2<>(area, row.getString(6)), (long) 1);
+	        	return new Tuple2<>(new Tuple2<>(area, row.getString(row.length()-1)), (long) 1);
 	        })).reduceByKey((x, y) -> x+y).cache();
 	        
 	        JavaPairRDD<String, Tuple2<String, Long>> centriCountForJoin = centriCount.mapToPair((row -> { 
@@ -54,7 +54,7 @@ public class Query1 {
 	        })).cache();
 	        
 	        
-	        
+	        //TODO filtering su giugno
 	        
 	        //Sort somministrazioni-vaccini-latest
 	        JavaPairRDD<LocalDate, Tuple2<String, Long>> parsedSummary = rawSummary.mapToPair((row -> {

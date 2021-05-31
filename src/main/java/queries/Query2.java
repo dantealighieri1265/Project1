@@ -5,7 +5,6 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.Year;
-import java.time.temporal.ChronoUnit;
 
 import org.apache.commons.math3.stat.regression.SimpleRegression;
 

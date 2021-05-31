@@ -41,7 +41,7 @@ a supporto dell'analisi e gli
 ulteriori ​\emph{framework}​ utilizzati.
 \end{abstract}
 
-\section{\textbf{Introduction}}
+\section{\textbf{Introduzione}}
 L'analisi effettuata si pone lo scopo di valutare delle
 statistiche relative ai vaccini contro il COVID-19, su dati 
 resi disponibili dal Commissario straordinario per l'semergenza Covid-19, 
@@ -68,15 +68,15 @@ Il progetto prevede l'utilizzo di alcuni \emph{framework} che permettono di rend
 Come \emph{framework} di processamento batch \`{e} stato utilizzato \emph{Apache Spark} che comunica con
  lo storage distribuito \emph{Hadoop Distributed File System}. Per la raccolta dei risultati \`{e} stato impiegato \emph{HBase}, uno storage No-SQL column family. Infine, come \emph{framework} di data ingestion \`{e} stato utilizzato \emph{NiFi}.
 \section{\textbf{Architettura}}
-L'architettura si compone di un insieme di container \emph{D	ocker}, su cui eseguono i servizi introdotti precedentemente. Inoltre, sempre sulla stessa macchina, una JVM ospita l'esecuzione di \emph{Apache Spark}. I container comunicano attraverso la stessa rete, creata appositamente.
+L'architettura si compone di un insieme di container \emph{Docker}, su cui eseguono i servizi introdotti precedentemente. Inoltre, sempre sulla stessa macchina, una JVM ospita l'esecuzione di \emph{Apache Spark}. I container comunicano attraverso la stessa rete, creata appositamente.
 \begin{figure}[htbp]
 \includegraphics[scale=0.24]{frameworks.png}
 \caption{Schema dell'architettura}\label{figura:architettura}
 \label{fig}
 \end{figure}
 
-\subsection*{NiFi}
-\emph{NiFi} \`{e} il servizio che permette di recuperare i dataset in formato \emph{comma separated value} da \emph{GitHub}, trasformarli in formato \emph{parquet} e inviarli al servizio di storage distribuito \emph{HDFS}.
+\subsection*{\textbf{NiFi}}
+\emph{NiFi} \`{e} il servizio che permette di recuperare i dataset in formato \emph{comma separated value} da \emph{GitHub}, trasformarli in formato \emph{parquet} e inviarli al servizio di storage distribuito \emph{HDFS}. Tale \emph{framework} \`{e} stato istanziato su container \emph{Docker} utilizzando l'immagine \emph{apache/nifi}.
 L'uso di \emph{parquet} ha permesso di comprimere i dati migliorando le prestazioni in termini di occupazione di memoria. \textbf{***colonne***}
 \par Al fine di eseguire le operazioni elencate, sono stati impiegati due \emph{processori}, uno che permette di collegarsi al servizio di hosting \emph{GitHub} e scaricare i dati e uno che permette la trasformazione in \emph{parquet} di questi ultimi e l'upload su \emph{HDFS}. La struttura \`{e} definita mediante il template in figura ~\ref{figura:template}.
 \begin{figure}[htbp]
@@ -85,16 +85,78 @@ L'uso di \emph{parquet} ha permesso di comprimere i dati migliorando le prestazi
 \label{fig}
 \end{figure}
 
-\subsection*{HDFS}
-\emph{HDFS} rappresenta il mezzo che permette l'archiviazione dei dati in maniera distribuita. Il servizio si compone di un nodo \emph{master} e tre nodi \emph{worker} 
+\subsection*{\textbf{HDFS}}
+\emph{HDFS} rappresenta il mezzo che permette l'archiviazione dei dati in maniera distribuita. Il servizio si compone di un nodo \emph{master} e tre nodi \emph{worker} con un livello di replicazione pari a 2. Tale servizio permette di rendere disponibili i dati su cui \emph{Spark} esegue la computazione e memorizza gli \emph{output} dell'analisi, che vengono, in seguito, esportati su \emph{HBase}, per eventuali analisi, manipolazione e rappresentazione dei dati. Il deployment del framework avviene attraverso l'utilizzo dell'immagine \emph{Docker} \emph{effeerre/hadoop}, istanziata su container. In seguito all'avvio del servizio, uno script permette di eseguire lo sturtup del \emph{Namenode} e dei \emph{Datanode}, e crea le directory \texttt{/data}, dove \emph{NiFi} inserisce i dati, e \texttt{/output}, in cui risiedono i risultati dell'analisi, concedendo i permessi di lettura, scrittura ed esecuzione.
 
-The IEEEtran class file is used to format your paper and style the text. All margins, 
-column widths, line spaces, and text fonts are prescribed; please do not 
-alter them. You may note peculiarities. For example, the head margin
-measures proportionately more than is customary. This measurement 
-and others are deliberate, using specifications that anticipate your paper 
-as one part of the entire proceedings, and not as an independent document. 
-Please do not revise any of the current designations.
+\subsection*{\textbf{Spark}}
+Al fine di preocessare i dati ed eseguire le \emph{query}, viene utilizzato \emph{Apache Spark} in locale, tramite lo script \texttt{\$SPARK\_HOME/bin/spark-submit}. Oltre allo \emph{Spark Core}, che espone un set di API di \emph{trasformazioni} ed \emph{azioni}, \`{e} stata impiegata la libreria di \emph{Machine Learning} \emph{MLlib}, utile per effettuare \emph{clustering} sui risultati della terza \emph{query}. 
+
+\subsection*{\textbf{HBase}}
+Hbase \`{e} stato utilizzato come datastore \emph{NoSQL} sul quale
+importare i risultati delle ​query,​ anche questo servizio \`{e}
+stato istanziato utilizzando un ​container \emph{Docker} realizzato,
+questa volta, a partire dall'immagine​ \emph{harisekhon/hbase}​. Affinch\`{e} fosse possibile
+l'esportazione dei risultati da \emph{HDFS} a \emph{HBase}, \`{e} stata creata la classe \texttt{HBaseQueries.java} che permette la creazione delle tabelle e l'inserimento dei dati, sfruttando la classe \texttt{HBaseClient.java}. Quest'ultima contiene informazioni riguardo la configurazione di \emph{HBase} e \emph{Zookeeper}, e le principali operazioni di gestione del datastore.\\\begin{list}{0}{\textbf{Lista:}}
+\item  ewf
+\item ef
+\end{list}
+\section{\textbf{Query}}
+\subsection*{\textbf{Query 1}}
+Al fine di soddisfare la seguente \emph{query}, si \`{e} reso necessario l'utilizzo di due file, \textit{somministrazioni-vaccini-summary-latest.parquet} e \textit{punti-somministrazione-tipologia.parquet}.\par
+Tali file sono stati caricati in \texttt{Dataset} e trasformati in \texttt{JavaPairRDD}, considerando le sole colonne di interesse: \emph{data\_somministrazione}, \emph{area} e \emph{totale} per il primo e \emph{area} per il secondo.\par \`{E} stato effettuato un'ordinamento dell'\texttt{RDD} \textit{somministrazioni-vaccini-summary-latest} in base alla data, scartando i dati precedenti al 1 Gennaio 2021 e successivi al 31 Maggio 2021, utilizzando la \emph{trasformazione} di \emph{filter}. Un'\emph{azione} di \emph{reduceByKey} ha permesso di ottenere il totale di vaccinazioni per ogni mese. Utilizzando un approccio simile al \emph{word count}, sono stati contati i centri riferiti ad una determinata Regione relativi all'\texttt{RDD} \textit{punti-somministrazione-tipologia}. La \emph{join} ha permesso di unire i due \texttt{RDD}, utilizzando come chiave la Regione. Il risultato finale \`{e} stato ottenuto dividendo il totale per il numero di giorni del mese di riferimento e per il numero di centri della regione di riferimento, ordinando, infine, il risultato in termini di mese e regione.
+
+\subsection*{\textbf{Query 2}}
+Relativamente alla seconda \emph{query} \`{e} stato utilizzato il file \textit{somministrazioni-vaccini-latest.parquet}, il quale, in seguito al caricamento da \emph{HDFS}, \`{e} stato trasformato in \texttt{JavaPairRDD}. Durante questa fase sono state scartate le colonne irrilevanti ai fini della richiesta. La \emph{trasformazione "filter"} ha permesso l'eliminazione delle entry relative a date precedenti al 1 Febbraio 2021 e successivi al 1 Giugno 2021. Considerando come chiave la tupla \emph{area, data e fascia anagrafica} sono stati sommati i vaccini relativi ad aziende farmaceutiche differenti. La \emph{trasformazione "groupByKey"} \`{e} stata applicata al fine di raggruppare tutte le tuple \emph{data, numero somministrazioni giornaliere} relative ad una certa regione e fascia anagrafica. Per ogni mese \`{e} stato eseguito una operazione di inserimento di date e valori macanti ed \`{e} stata effettuata \emph{regressione lineare} per ogni mese, in modo da prevedere il numero di donne vaccinate al primo giorno del mese successivo. Il modello di regressione lineare \'{e} stato addestrato attraverso l'implementazione fornita dalla libreria di regressione di \texttt{Apache Commons}.
+
+\subsection*{\textbf{Query 3}}
+L'ultima \emph{query} fa uso dei dati presenti nei file \textit{somministrazioni-vaccini-summary-latest.parquet} e \textit{totale-popolazione.parquet}. In seguito si \`{e} passati al caricamento dei file e alla trasformazione in \texttt{JavaPairRDD}. Sui dati relativi a \textit{somministrazioni-vaccini-summary-latest} si \`{e} proceduto al raggruppamento delle tuple \emph{data, numero somministrazioni giornaliere} per ogni regione, questa operazione ha permesso di svolgere regressione lineare su tutti i giorni dal 27 Dicembre 2020 al 31 Maggio 2021, in modo da prevedere il numero di vaccini effettuati in data 1 Giugno 2021. Una \emph{reduceByKey} sulle regioni ha, invece, permesso di calcolare il totale di vaccini effettuati dal 27 Dicembre 2020 al 31 Maggio 2021. Infine, l'operazione di somma tra le proiezioni e il totale calcolato, ha decretato il numero totale previsto di vaccinati per regione al 1 Giugno 2021. Il \emph{join} tra l'\emph{RDD} in questione e quello contenente il numero totale di abitanti residenti in ciacuna regione, he reso possibile clcolare la percentuale prevista di vaccinati al 1 Giugno 2021. Utilizzando due algoritmi presenti in \emph{MLLib}, \`{e} stato effettuato \emph{clustering} utilizzando i risultati precedenti come dataset, con numero di cluster variabile da 2 a 5. Gli algoritmi utilizzati sono \emph{K-means} e \emph{Bisecting K-means}, mentre per la regressione \`{e} stata utilizzata l'implementazione fornita dalla libreria di regressione di \texttt{Apache Commons}.
+
+\section{\textbf{Benchmark}}
+L'esecuzione del progetto e la valutazione delle prestazioni sono state eseguite su Linux Mint 19.3 Cinnamon, Intel Core i7-8750H CPU, 6 core, 12 thread e 32 GB di RAM, con archiviazione su HDD. \\
+\par In tabella~\ref{tab1} sono riportati i tempi di processamento delle query. Sono stati considerate le performance di puro processamento, ovvero non considerando i tempi di sturtup della \emph{Java Virtual Machine} su cui \emph{Spark} opera, il caricamento dei file dall'\emph{HDFS} e la scrittura dei risultati. Come si pu\`{o} notare, la query 3 risulta molto pi\`{u} lenta delle altre due, che, invece, mostrano risultati comparabili. Tale evidenza \`{e} causata dall'inclusione, nel totale, dei tempi di addestramento degli algoritmi di \emph{clustering}, che possono essere osservati in tabella~\ref{tab2}.
+
+\begin{table}[htbp]
+\caption{Tempi esecuzione query}
+\begin{center}
+    \begin{tabular}{|c|c|c|}
+    \hline
+    \textbf{Query} & \textbf{Media} & \textbf{Varianza}  \\ \hline
+    Query 1 & 11C & 22C  \\ \hline
+    Query 2 & 9C & 19C \\ \hline
+    Query 3 & 10C & 21C  \\
+    \hline
+    \end{tabular}
+\label{tab1}
+\end{center}
+\end{table}
+
+
+\begin{table}[htbp]
+\caption{Tempi esecuzione clustering}
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+\textbf{}&\multicolumn{4}{|c|}{\textbf{Modello}} \\ \hline
+\textbf{Numero} & \multicolumn{2}{|c|}{\textbf{K-means}} & \multicolumn{2}{|c|}{\textbf{Bisecting K-means}} \\ \cline{2-5} 
+\textbf{cluster} & \textbf{Media} & \textbf{Varianza} & \textbf{Media} & \textbf{Varianza} \\ \hline
+
+\end{tabular}
+\label{tab2}
+\end{center}
+\end{table}
+
+\begin{table}[htbp]
+\caption{Costo clustering}
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\hline
+\textbf{Numero}&\multicolumn{2}{|c|}{\textbf{Modello}} \\ \cline{2-3}
+\textbf{cluster} & \multicolumn{1}{|c|}{\textbf{K-means}} & \multicolumn{1}{|c|}{\textbf{Bisecting K-means}} \\ \hline
+
+\end{tabular}
+\label{tab3}
+\end{center}
+\end{table}
 
 \section{Prepare Your Paper Before Styling}
 Before you begin to format your paper, first write and save the content as a 
@@ -238,7 +300,6 @@ copy& More table copy$^{\mathrm{a}}$& &  \\
 \hline
 \multicolumn{4}{l}{$^{\mathrm{a}}$Sample of a Table footnote.}
 \end{tabular}
-\label{tab1}
 \end{center}
 \end{table}
 

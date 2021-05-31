@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2021.5.28)  28 MAY 2021 19:12
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2021.5.28)  31 MAY 2021 20:53
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -464,11 +464,6 @@ File: frameworks.png Graphic file (type png)
 <use frameworks.png>
 Package pdftex.def Info: frameworks.png  used on input line 73.
 (pdftex.def)             Requested size: 238.25497pt x 127.92052pt.
-
-Underfull \hbox (badness 1558) in paragraph at lines 71--77
-[]\OT1/ptm/m/n/10 L'architettura si com-pone di un in-sieme di con-tainer
- []
-
 <NiFi_template.png, id=2, 1323.94624pt x 676.5275pt>
 File: NiFi_template.png Graphic file (type png)
 <use NiFi_template.png>
@@ -478,36 +473,93 @@ Package pdftex.def Info: NiFi_template.png  used on input line 83.
 
 
 ]
-LaTeX Font Info:    Try loading font information for U+msa on input line 106.
-
-(/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd
-File: umsa.fd 2013/01/14 v3.01 AMS symbols A
-)
-LaTeX Font Info:    Try loading font information for U+msb on input line 106.
-
-(/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
-File: umsb.fd 2013/01/14 v3.01 AMS symbols B
-)
-LaTeX Font Info:    Try loading font information for OT1+pcr on input line 141.
-
+LaTeX Font Info:    Try loading font information for OT1+pcr on input line 89.
 
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/ot1pcr.fd
 File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
-) [2 <./frameworks.png> <./NiFi_template.png>]
-<fig1.png, id=19, 82.1469pt x 71.5473pt>
+)
+LaTeX Font Info:    Try loading font information for TS1+pcr on input line 92.
+
+(/usr/share/texlive/texmf-dist/tex/latex/psnfss/ts1pcr.fd
+File: ts1pcr.fd 2001/06/04 font definitions for TS1/pcr.
+)
+Underfull \hbox (badness 2261) in paragraph at lines 92--93
+[]\OT1/ptm/m/n/10 Al fine di pre-o-ces-sare i dati ed es-eguire le \OT1/ptm/m/i
+t/10 query\OT1/ptm/m/n/10 ,
+ []
+
+
+Underfull \hbox (badness 1946) in paragraph at lines 92--93
+\TS1/pcr/m/n/10 $\OT1/pcr/m/n/10 SPARK_HOME/bin/spark-submit\OT1/ptm/m/n/10 . O
+ltre allo \OT1/ptm/m/it/10 Spark
+ []
+
+Missing character: There is no â in font ptmr7t!
+Missing character: There is no € in font ptmr7t!
+Missing character: There is no ‹ in font ptmr7t!
+Missing character: There is no â in font ptmr7t!
+Missing character: There is no € in font ptmr7t!
+Missing character: There is no ‹ in font ptmr7t!
+Missing character: There is no â in font ptmr7t!
+Missing character: There is no € in font ptmr7t!
+Missing character: There is no ‹ in font ptmr7t!
+Missing character: There is no â in font ptmr7t!
+Missing character: There is no € in font ptmr7t!
+Missing character: There is no ‹ in font ptmr7t!
+Missing character: There is no â in font ptmr7t!
+Missing character: There is no € in font ptmr7t!
+Missing character: There is no ‹ in font ptmr7t!
+
+Underfull \hbox (badness 10000) in paragraph at lines 106--107
+[][]\OT1/ptm/m/n/10 E stato ef-fet-tuato un'ordinamento dell'\OT1/pcr/m/n/10 RD
+D
+ []
+
+
+Underfull \hbox (badness 1675) in paragraph at lines 106--107
+\OT1/ptm/m/n/10 rifer-i-mento e per il nu-mero di cen-tri della re-gione di
+ []
+
+[2 <./frameworks.png> <./NiFi_template.png>]
+Underfull \hbox (badness 7981) in paragraph at lines 112--113
+[]\OT1/ptm/m/n/10 L'ultima \OT1/ptm/m/it/10 query \OT1/ptm/m/n/10 fa uso dei da
+ti pre-senti nei file
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 112--113
+\OT1/ptm/m/it/10 somministrazioni-vaccini-summary-latest.parquet \OT1/ptm/m/n/1
+0 e \OT1/ptm/m/it/10 totale-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 115--116
+
+ []
+
+LaTeX Font Info:    Try loading font information for U+msa on input line 121.
+(/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd
+File: umsa.fd 2013/01/14 v3.01 AMS symbols A
+)
+LaTeX Font Info:    Try loading font information for U+msb on input line 121.
+
+(/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
+File: umsb.fd 2013/01/14 v3.01 AMS symbols B
+) [3]
+<fig1.png, id=22, 82.1469pt x 71.5473pt>
 File: fig1.png Graphic file (type png)
 <use fig1.png>
-Package pdftex.def Info: fig1.png  used on input line 246.
+Package pdftex.def Info: fig1.png  used on input line 307.
 (pdftex.def)             Requested size: 82.14668pt x 71.5471pt.
-LaTeX Font Info:    Try loading font information for OMS+ptm on input line 257.
+LaTeX Font Info:    Try loading font information for OMS+ptm on input line 318.
 
 
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/omsptm.fd
 File: omsptm.fd 
 )
 LaTeX Font Info:    Font shape `OMS/ptm/m/n' in size <10> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 257.
- [3]
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 318.
+ [4]
 
 ** Conference Paper **
 Before submitting the final camera ready copy, remember to:
@@ -519,19 +571,19 @@ Before submitting the final camera ready copy, remember to:
  uses only Type 1 fonts and that every step in the generation
  process uses the appropriate paper size.
 
-[4 <./fig1.png (PNG copy)>] (./conference_101719.aux)
+[5 <./fig1.png (PNG copy)>] (./conference_101719.aux)
 
 LaTeX Warning: There were multiply-defined labels.
 
  ) 
 Here is how much of TeX's memory you used:
- 4428 strings out of 492982
- 64106 string characters out of 6134896
- 132959 words of memory out of 5000000
- 7913 multiletter control sequences out of 15000+600000
- 48460 words of font info for 94 fonts, out of 8000000 for 9000
+ 4454 strings out of 492982
+ 64464 string characters out of 6134896
+ 133974 words of memory out of 5000000
+ 7935 multiletter control sequences out of 15000+600000
+ 48753 words of font info for 95 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 41i,11n,35p,588b,277s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 41i,11n,35p,1563b,277s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/share/texliv
 e/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texm
 f-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/
@@ -543,10 +595,10 @@ a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/sha
 re/texlive/texmf-dist/fonts/type1/urw/times/utmbi8a.pfb></usr/share/texlive/tex
 mf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/share/texlive/texmf-dist/fonts/t
 ype1/urw/times/utmri8a.pfb>
-Output written on conference_101719.pdf (4 pages, 472855 bytes).
+Output written on conference_101719.pdf (5 pages, 488063 bytes).
 PDF statistics:
- 65 PDF objects out of 1000 (max. 8388607)
- 44 compressed objects within 1 object stream
+ 68 PDF objects out of 1000 (max. 8388607)
+ 46 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  16 words of extra memory for PDF output out of 10000 (max. 10000000)
 
