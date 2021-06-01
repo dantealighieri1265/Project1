@@ -1,19 +1,17 @@
 package utils;
 
-import java.beans.Transient;
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.List;
 
 import org.apache.hadoop.hbase.TableName;
-import org.apache.hadoop.hbase.client.ResultScanner;
-import org.apache.hadoop.hbase.client.Scan;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
 
 import com.google.protobuf.ServiceException;
+
+import queries.ClassForTest;
 
 public class HBaseQueries {
 	/**
@@ -64,7 +62,7 @@ public class HBaseQueries {
 			}
 			hbc.createTable(tableName, columnFamilies);
 		} catch (IOException | ServiceException e) {
-			e.printStackTrace();
+			ClassForTest.log.error(e);
 		}
 	}
 	
@@ -167,7 +165,7 @@ public class HBaseQueries {
 			hbc.put("query1", "row2", "query1_family", "mese", "gennaio", "query1_family", "area", "Basilicata", "query1_family", "num_vacc", "16");
 			hbc.put("query1", "row1", "query1_family", "mese", "gennaio", "query1_family", "area", "Basilicata", "query1_family", "num_vacc", "15");
 		} catch (IOException | ServiceException e) {
-			e.printStackTrace();
+			ClassForTest.log.error(e);
 		}
 		System.out.println(hbc.get("query1", "row2", "query1_family", "num_vacc"));
 		System.out.println(hbc.describeTable("query1"));

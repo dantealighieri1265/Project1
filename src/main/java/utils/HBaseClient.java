@@ -23,7 +23,7 @@ public class HBaseClient {
     private static final int HBASE_MAX_VERSIONS = Integer.MAX_VALUE;
 
 
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     public enum ALTER_COLUMN_FAMILY {
         ADD, DELETE
@@ -47,7 +47,7 @@ public class HBaseClient {
             return connection;
 
 //        if (!DEBUG)
-            Logger.getRootLogger().setLevel(Level.ERROR);
+//            Logger.getRootLogger().setLevel(Level.ERROR);
 
         Configuration conf  = HBaseConfiguration.create();
         conf.set("hbase.zookeeper.quorum", ZOOKEEPER_HOST);
