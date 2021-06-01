@@ -12,7 +12,7 @@ import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SaveMode;
 import org.apache.spark.sql.SparkSession;
 
-import queries.ClassForTest;
+import queries.QueryMain;
 
 public class HdfsUtility {
 	
@@ -47,9 +47,9 @@ public class HdfsUtility {
 				fs = FileSystem.get(new URI("hdfs:"+HdfsUtility.URL_HDFS+":" +HdfsUtility.PORT_HDFS), new Configuration());
 				fs.delete(new Path(HdfsUtility.OUTPUT_HDFS+HdfsUtility.QUERY3_CLUSTER_DIR+"_Support"), true);
 			} catch (IOException e) {
-				ClassForTest.log.error(e);
+				QueryMain.log.error(e);
 			} catch (URISyntaxException e) {
-				ClassForTest.log.error(e);
+				QueryMain.log.error(e);
 			}
 		}
 		
@@ -58,9 +58,9 @@ public class HdfsUtility {
 			String old = fs.globStatus(new Path(OUTPUT_HDFS+dir+"/part*.parquet"))[0].getPath().getName();
 			fs.rename(new Path(OUTPUT_HDFS+dir+"/"+old), new Path(OUTPUT_HDFS+dir+"/"+newName));
 		} catch (IOException e) {
-			ClassForTest.log.error(e);
+			QueryMain.log.error(e);
 		} catch (URISyntaxException e) {
-			ClassForTest.log.error(e);
+			QueryMain.log.error(e);
 		}
 	}
 	

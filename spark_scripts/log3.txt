@@ -1,0 +1,151 @@
+Starting Spark in Debug Mode...
+2021-06-01 18:35:39.804 [main] INFO  queries.QueryForTest.main(QueryForTest.java:32) - Starting Queries ...
+2021-06-01 18:35:44.797 [main] INFO  queries.Query1.run(Query1.java:90) - Query 1 completed in 822ms
+2021-06-01 18:35:47.985 [main] INFO  queries.Query2.run(Query2.java:240) - Query 2 completed in 1679ms
+2021-06-01 18:35:49.122 [main] INFO  queries.Query3.run(Query3.java:108) - Inizialization Cluster time: 727
+2021-06-01 18:35:51.281 [main] INFO  queries.Query3.run(Query3.java:185) - total: 2944ms
+2021-06-01 18:35:51.281 [main] INFO  queries.Query3.run(Query3.java:186) - Query 3 completed in 2217ms
+2021-06-01 18:35:52.802 [main] INFO  queries.Query3.run(Query3.java:213) - QUERY3 PERFORMANCE:
+2021-06-01 18:35:52.802 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS,2,418,0.005639449880543328]
+2021-06-01 18:35:52.803 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS-BISECTING,2,218,0.005391750687436297]
+2021-06-01 18:35:52.803 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS,3,199,0.0030158799529254147]
+2021-06-01 18:35:52.803 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS-BISECTING,3,194,0.002586815432217875]
+2021-06-01 18:35:52.803 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS,4,244,0.0014694528320171134]
+2021-06-01 18:35:52.803 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS-BISECTING,4,189,0.0013890851716006174]
+2021-06-01 18:35:52.803 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS,5,175,0.0013852485790963598]
+2021-06-01 18:35:52.803 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS-BISECTING,5,172,8.601016973352461E-4]
+2021-06-01 18:35:52.803 [main] INFO  queries.QueryForTest.main(QueryForTest.java:32) - Starting Queries ...
+2021-06-01 18:35:53.122 [main] INFO  queries.Query1.run(Query1.java:90) - Query 1 completed in 183ms
+2021-06-01 18:35:54.872 [main] INFO  queries.Query2.run(Query2.java:240) - Query 2 completed in 1174ms
+2021-06-01 18:35:55.449 [main] INFO  queries.Query3.run(Query3.java:108) - Inizialization Cluster time: 323
+2021-06-01 18:35:57.604 [main] INFO  queries.Query3.run(Query3.java:185) - total: 2504ms
+2021-06-01 18:35:57.604 [main] INFO  queries.Query3.run(Query3.java:186) - Query 3 completed in 2181ms
+2021-06-01 18:35:59.056 [main] INFO  queries.Query3.run(Query3.java:213) - QUERY3 PERFORMANCE:
+2021-06-01 18:35:59.056 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS,2,282,0.005639449880543328]
+2021-06-01 18:35:59.056 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS-BISECTING,2,356,0.005639449880543328]
+2021-06-01 18:35:59.056 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS,3,183,0.0023040673873303275]
+2021-06-01 18:35:59.056 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS-BISECTING,3,214,0.002586815432217875]
+2021-06-01 18:35:59.056 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS,4,256,0.0014123294286753957]
+2021-06-01 18:35:59.056 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS-BISECTING,4,214,0.0014694528320171134]
+2021-06-01 18:35:59.056 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS,5,226,0.0013233053793570045]
+2021-06-01 18:35:59.056 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS-BISECTING,5,141,8.145943854283462E-4]
+2021-06-01 18:35:59.057 [main] INFO  queries.QueryForTest.main(QueryForTest.java:32) - Starting Queries ...
+2021-06-01 18:35:59.339 [main] INFO  queries.Query1.run(Query1.java:90) - Query 1 completed in 124ms
+2021-06-01 18:36:00.814 [main] INFO  queries.Query2.run(Query2.java:240) - Query 2 completed in 879ms
+2021-06-01 18:36:01.334 [main] INFO  queries.Query3.run(Query3.java:108) - Inizialization Cluster time: 287
+2021-06-01 18:36:03.222 [main] INFO  queries.Query3.run(Query3.java:185) - total: 2209ms
+2021-06-01 18:36:03.222 [main] INFO  queries.Query3.run(Query3.java:186) - Query 3 completed in 1922ms
+2021-06-01 18:36:04.459 [main] INFO  queries.Query3.run(Query3.java:213) - QUERY3 PERFORMANCE:
+2021-06-01 18:36:04.459 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS,2,150,0.005391750687436297]
+2021-06-01 18:36:04.459 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS-BISECTING,2,296,0.005639449880543328]
+2021-06-01 18:36:04.459 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS,3,165,0.002586815432217875]
+2021-06-01 18:36:04.459 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS-BISECTING,3,178,0.002586815432217875]
+2021-06-01 18:36:04.460 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS,4,178,0.001585454845381762]
+2021-06-01 18:36:04.460 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS-BISECTING,4,189,0.001393250663976422]
+2021-06-01 18:36:04.460 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS,5,221,0.0013233053793570045]
+2021-06-01 18:36:04.460 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS-BISECTING,5,218,7.508402900685479E-4]
+2021-06-01 18:36:04.460 [main] INFO  queries.QueryForTest.main(QueryForTest.java:32) - Starting Queries ...
+2021-06-01 18:36:04.701 [main] INFO  queries.Query1.run(Query1.java:90) - Query 1 completed in 119ms
+2021-06-01 18:36:06.082 [main] INFO  queries.Query2.run(Query2.java:240) - Query 2 completed in 875ms
+2021-06-01 18:36:06.589 [main] INFO  queries.Query3.run(Query3.java:108) - Inizialization Cluster time: 293
+2021-06-01 18:36:08.131 [main] INFO  queries.Query3.run(Query3.java:185) - total: 1858ms
+2021-06-01 18:36:08.132 [main] INFO  queries.Query3.run(Query3.java:186) - Query 3 completed in 1565ms
+2021-06-01 18:36:09.378 [main] INFO  queries.Query3.run(Query3.java:213) - QUERY3 PERFORMANCE:
+2021-06-01 18:36:09.378 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS,2,119,0.005391750687436297]
+2021-06-01 18:36:09.378 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS-BISECTING,2,278,0.005639449880543328]
+2021-06-01 18:36:09.378 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS,3,118,0.002325087346269719]
+2021-06-01 18:36:09.378 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS-BISECTING,3,134,0.003045791815468773]
+2021-06-01 18:36:09.378 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS,4,127,0.001393250663976422]
+2021-06-01 18:36:09.378 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS-BISECTING,4,159,0.0014694528320171134]
+2021-06-01 18:36:09.378 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS,5,159,6.704726296520519E-4]
+2021-06-01 18:36:09.378 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS-BISECTING,5,188,7.508402900685479E-4]
+2021-06-01 18:36:09.378 [main] INFO  queries.QueryForTest.main(QueryForTest.java:32) - Starting Queries ...
+2021-06-01 18:36:09.632 [main] INFO  queries.Query1.run(Query1.java:90) - Query 1 completed in 122ms
+2021-06-01 18:36:10.947 [main] INFO  queries.Query2.run(Query2.java:240) - Query 2 completed in 802ms
+2021-06-01 18:36:11.411 [main] INFO  queries.Query3.run(Query3.java:108) - Inizialization Cluster time: 254
+2021-06-01 18:36:12.949 [main] INFO  queries.Query3.run(Query3.java:185) - total: 1816ms
+2021-06-01 18:36:12.949 [main] INFO  queries.Query3.run(Query3.java:186) - Query 3 completed in 1562ms
+2021-06-01 18:36:14.520 [main] INFO  queries.Query3.run(Query3.java:213) - QUERY3 PERFORMANCE:
+2021-06-01 18:36:14.520 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS,2,153,0.005391750687436297]
+2021-06-01 18:36:14.520 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS-BISECTING,2,179,0.005391750687436297]
+2021-06-01 18:36:14.521 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS,3,164,0.00312932815369285]
+2021-06-01 18:36:14.521 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS-BISECTING,3,146,0.002586815432217875]
+2021-06-01 18:36:14.521 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS,4,208,0.0014694528320171134]
+2021-06-01 18:36:14.521 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS-BISECTING,4,165,0.001393250663976422]
+2021-06-01 18:36:14.521 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS,5,188,7.508402900685479E-4]
+2021-06-01 18:36:14.521 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS-BISECTING,5,127,0.0013042266146580308]
+2021-06-01 18:36:14.521 [main] INFO  queries.QueryForTest.main(QueryForTest.java:32) - Starting Queries ...
+2021-06-01 18:36:14.760 [main] INFO  queries.Query1.run(Query1.java:90) - Query 1 completed in 110ms
+2021-06-01 18:36:16.077 [main] INFO  queries.Query2.run(Query2.java:240) - Query 2 completed in 825ms
+2021-06-01 18:36:16.536 [main] INFO  queries.Query3.run(Query3.java:108) - Inizialization Cluster time: 256
+2021-06-01 18:36:17.831 [main] INFO  queries.Query3.run(Query3.java:185) - total: 1575ms
+2021-06-01 18:36:17.831 [main] INFO  queries.Query3.run(Query3.java:186) - Query 3 completed in 1319ms
+2021-06-01 18:36:19.033 [main] INFO  queries.Query3.run(Query3.java:213) - QUERY3 PERFORMANCE:
+2021-06-01 18:36:19.033 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS,2,182,0.005639449880543328]
+2021-06-01 18:36:19.033 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS-BISECTING,2,121,0.005391750687436297]
+2021-06-01 18:36:19.033 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS,3,112,0.0023040673873303275]
+2021-06-01 18:36:19.033 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS-BISECTING,3,138,0.00312932815369285]
+2021-06-01 18:36:19.033 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS,4,113,0.0015368318814411386]
+2021-06-01 18:36:19.033 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS-BISECTING,4,162,0.0014123294286753957]
+2021-06-01 18:36:19.033 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS,5,118,0.0010453523802306866]
+2021-06-01 18:36:19.033 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS-BISECTING,5,131,0.0013140880725303345]
+2021-06-01 18:36:19.033 [main] INFO  queries.QueryForTest.main(QueryForTest.java:32) - Starting Queries ...
+2021-06-01 18:36:19.291 [main] INFO  queries.Query1.run(Query1.java:90) - Query 1 completed in 130ms
+2021-06-01 18:36:20.626 [main] INFO  queries.Query2.run(Query2.java:240) - Query 2 completed in 850ms
+2021-06-01 18:36:21.088 [main] INFO  queries.Query3.run(Query3.java:108) - Inizialization Cluster time: 260
+2021-06-01 18:36:22.929 [main] INFO  queries.Query3.run(Query3.java:185) - total: 2123ms
+2021-06-01 18:36:22.929 [main] INFO  queries.Query3.run(Query3.java:186) - Query 3 completed in 1863ms
+2021-06-01 18:36:24.041 [main] INFO  queries.Query3.run(Query3.java:213) - QUERY3 PERFORMANCE:
+2021-06-01 18:36:24.041 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS,2,265,0.005639449880543328]
+2021-06-01 18:36:24.042 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS-BISECTING,2,292,0.005639449880543328]
+2021-06-01 18:36:24.042 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS,3,157,0.0023040673873303275]
+2021-06-01 18:36:24.042 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS-BISECTING,3,146,0.0023040673873303275]
+2021-06-01 18:36:24.042 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS,4,207,0.001585454845381762]
+2021-06-01 18:36:24.042 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS-BISECTING,4,167,0.001585454845381762]
+2021-06-01 18:36:24.042 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS,5,157,6.704726296520519E-4]
+2021-06-01 18:36:24.042 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS-BISECTING,5,185,8.77316880204473E-4]
+2021-06-01 18:36:24.042 [main] INFO  queries.QueryForTest.main(QueryForTest.java:32) - Starting Queries ...
+2021-06-01 18:36:24.254 [main] INFO  queries.Query1.run(Query1.java:90) - Query 1 completed in 107ms
+2021-06-01 18:36:25.553 [main] INFO  queries.Query2.run(Query2.java:240) - Query 2 completed in 808ms
+2021-06-01 18:36:26.031 [main] INFO  queries.Query3.run(Query3.java:108) - Inizialization Cluster time: 262
+2021-06-01 18:36:27.209 [main] INFO  queries.Query3.run(Query3.java:185) - total: 1463ms
+2021-06-01 18:36:27.209 [main] INFO  queries.Query3.run(Query3.java:186) - Query 3 completed in 1201ms
+2021-06-01 18:36:28.225 [main] INFO  queries.Query3.run(Query3.java:213) - QUERY3 PERFORMANCE:
+2021-06-01 18:36:28.225 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS,2,119,0.005391750687436297]
+2021-06-01 18:36:28.226 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS-BISECTING,2,113,0.005391750687436297]
+2021-06-01 18:36:28.226 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS,3,125,0.00312932815369285]
+2021-06-01 18:36:28.226 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS-BISECTING,3,107,0.0030158799529254147]
+2021-06-01 18:36:28.226 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS,4,183,0.0014123294286753957]
+2021-06-01 18:36:28.226 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS-BISECTING,4,121,0.001585454845381762]
+2021-06-01 18:36:28.226 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS,5,121,0.001458010026609426]
+2021-06-01 18:36:28.226 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS-BISECTING,5,105,6.704726296520519E-4]
+2021-06-01 18:36:28.226 [main] INFO  queries.QueryForTest.main(QueryForTest.java:32) - Starting Queries ...
+2021-06-01 18:36:28.448 [main] INFO  queries.Query1.run(Query1.java:90) - Query 1 completed in 107ms
+2021-06-01 18:36:29.728 [main] INFO  queries.Query2.run(Query2.java:240) - Query 2 completed in 788ms
+2021-06-01 18:36:30.172 [main] INFO  queries.Query3.run(Query3.java:108) - Inizialization Cluster time: 246
+2021-06-01 18:36:31.575 [main] INFO  queries.Query3.run(Query3.java:185) - total: 1671ms
+2021-06-01 18:36:31.575 [main] INFO  queries.Query3.run(Query3.java:186) - Query 3 completed in 1425ms
+2021-06-01 18:36:32.520 [main] INFO  queries.Query3.run(Query3.java:213) - QUERY3 PERFORMANCE:
+2021-06-01 18:36:32.521 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS,2,219,0.005639449880543328]
+2021-06-01 18:36:32.521 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS-BISECTING,2,231,0.005639449880543328]
+2021-06-01 18:36:32.521 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS,3,168,0.00312932815369285]
+2021-06-01 18:36:32.521 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS-BISECTING,3,110,0.002586815432217875]
+2021-06-01 18:36:32.521 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS,4,104,0.001393250663976422]
+2021-06-01 18:36:32.521 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS-BISECTING,4,140,0.0014123294286753957]
+2021-06-01 18:36:32.521 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS,5,124,0.0013042266146580308]
+2021-06-01 18:36:32.521 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS-BISECTING,5,123,8.411264896811994E-4]
+2021-06-01 18:36:32.521 [main] INFO  queries.QueryForTest.main(QueryForTest.java:32) - Starting Queries ...
+2021-06-01 18:36:32.720 [main] INFO  queries.Query1.run(Query1.java:90) - Query 1 completed in 96ms
+2021-06-01 18:36:34.019 [main] INFO  queries.Query2.run(Query2.java:240) - Query 2 completed in 787ms
+2021-06-01 18:36:34.463 [main] INFO  queries.Query3.run(Query3.java:108) - Inizialization Cluster time: 253
+2021-06-01 18:36:35.700 [main] INFO  queries.Query3.run(Query3.java:185) - total: 1513ms
+2021-06-01 18:36:35.700 [main] INFO  queries.Query3.run(Query3.java:186) - Query 3 completed in 1260ms
+2021-06-01 18:36:36.638 [main] INFO  queries.Query3.run(Query3.java:213) - QUERY3 PERFORMANCE:
+2021-06-01 18:36:36.638 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS,2,229,0.005639449880543328]
+2021-06-01 18:36:36.638 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS-BISECTING,2,127,0.005391750687436297]
+2021-06-01 18:36:36.638 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS,3,103,0.002586815432217875]
+2021-06-01 18:36:36.638 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS-BISECTING,3,118,0.002325087346269719]
+2021-06-01 18:36:36.638 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS,4,102,0.0015470340759278175]
+2021-06-01 18:36:36.639 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS-BISECTING,4,100,0.001393250663976422]
+2021-06-01 18:36:36.639 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS,5,157,6.704726296520519E-4]
+2021-06-01 18:36:36.639 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS-BISECTING,5,115,8.145943854283462E-4]

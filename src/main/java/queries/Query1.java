@@ -54,7 +54,7 @@ public class Query1 {
 	            LocalDate date = LocalDate.parse(row.getString(0), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 	            return new Tuple2<>(date, new Tuple2<>(row.getString(row.length()-1), Long.valueOf(row.getInt(2))));
 	        })).filter(row -> {
-	        	return row._1.isAfter(ClassForTest.LAST_DECEMBER) && row._1.isBefore(ClassForTest.FIRST_JUNE);
+	        	return row._1.isAfter(QueryMain.LAST_DECEMBER) && row._1.isBefore(QueryMain.FIRST_JUNE);
 	        }).sortByKey(true);
 	        
 	        
@@ -85,8 +85,7 @@ public class Query1 {
 	            return new Tuple2<>(new Tuple2<>(month, row._1), row._2._1._2/(lenghtOfMonth*row._2._2));
 	        })).sortByKey(new Query1Comparator<Month, String>(Comparator.<Month>naturalOrder(), Comparator.<String>naturalOrder()));
 	        
-	        Instant end = Instant.now();
-			ClassForTest.log.info("Query 1 completed in " + Duration.between(start, end).toMillis() + "ms");
+			//monthAreaTotalPerDay.collect();
 	        
 	        JavaRDD<Row> resultJavaRDD = monthAreaTotalPerDay.map((Function<Tuple2<Tuple2<Month, String>, Long>, Row>) row -> {
 				return RowFactory.create(row._1()._1().name(), row._1()._2(), row._2);
@@ -99,16 +98,19 @@ public class Query1 {
 	        StructType resultStruct = DataTypes.createStructType(resultFields);
 	        
 	        Dataset<Row> dataset = spark.createDataFrame(resultJavaRDD, resultStruct);
-	        HdfsUtility.write(dataset, HdfsUtility.QUERY1_DIR, SaveMode.Overwrite, false, "query1_results.parquet");
 	        
-	        if (ClassForTest.DEBUG) {
+	        HdfsUtility.write(dataset, HdfsUtility.QUERY1_DIR, SaveMode.Overwrite, false, "query1_results.parquet");
+	        Instant end = Instant.now();
+			QueryMain.log.info("Query 1 completed in " + Duration.between(start, end).toMillis() + "ms");
+	        
+	        /*if (QueryMain.DEBUG) {
 	        	HdfsUtility.writeForTest(dataset, HdfsUtility.QUERY1_DIR, SaveMode.Overwrite, false, "query1_results.csv");	 
 	        	List<Row> list =  resultJavaRDD.collect();
-	        	ClassForTest.log.info("QUERY1 RESULTS:");
+	        	QueryMain.log.info("QUERY1 RESULTS:");
 	            for (Row l: list) {
-	            	ClassForTest.log.info(l);
+	            	QueryMain.log.info(l);
 	            }
-	        }
+	        }*/
 	        
 		}
 		public static void main(String[] args) {

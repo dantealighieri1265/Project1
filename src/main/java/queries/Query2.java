@@ -55,7 +55,7 @@ public class Query2 {
         //Eliminiamo i valori precedenti a Febbraio e successivi al 31 maggio
         JavaRDD<Row> selectRow = rawVaccine.filter(row ->{
         	LocalDate date = LocalDate.parse(row.getString(0), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        	return !date.isBefore(ClassForTest.FIRST_FEBRUARY) && date.isBefore(ClassForTest.FIRST_JUNE);
+        	return !date.isBefore(QueryMain.FIRST_FEBRUARY) && date.isBefore(QueryMain.FIRST_JUNE);
         });
         
         
@@ -124,8 +124,8 @@ public class Query2 {
 					if (n_vaccinationsDays >= 2) {
 						list.addAll(listSupport);
 					}else {
-						if (ClassForTest.DEBUG)
-							ClassForTest.log.info("Fascia d'età, Regione e Mese da scartare: "+row.toString());
+						/*if (ClassForTest.DEBUG)
+							ClassForTest.log.info("Fascia d'età, Regione e Mese da scartare: "+row.toString());*/
 					}
 					listSupport.clear();
 					n_vaccinationsDays = 0;
@@ -142,8 +142,8 @@ public class Query2 {
 			if (n_vaccinationsDays>=2) {
 				list.addAll(listSupport);
 			}else {
-				if (ClassForTest.DEBUG)
-					ClassForTest.log.info("Fascia d'età e regione da scartare: "+row.toString());
+				/*if (ClassForTest.DEBUG)
+					ClassForTest.log.info("Fascia d'età e regione da scartare: "+row.toString());*/
 			}
 			listSupport.clear();		
         	return list.iterator();  	
@@ -178,8 +178,8 @@ public class Query2 {
         		}
         		
 			}
-        	if (ClassForTest.DEBUG) {
-				ClassForTest.log.info("Regione: "+row._1._1()+"; Fascia d'età: "+row._1._2()+"; Mese: "+row._1._3()+"; Lista giorni mancanti: "+list);
+        	if (QueryMain.DEBUG) {
+				//ClassForTest.log.info("Regione: "+row._1._1()+"; Fascia d'età: "+row._1._2()+"; Mese: "+row._1._3()+"; Lista giorni mancanti: "+list);
 
         	}
         	Iterables.addAll(list, vaccineDaysPerMonth);
@@ -235,8 +235,8 @@ public class Query2 {
         	return list.iterator();
         });
 
-        Instant end = Instant.now();
-		ClassForTest.log.info("Query 2 completed in " + Duration.between(start, end).toMillis() + "ms");
+        //result.collect();
+        
         
         JavaRDD<Row> resultJavaRDD = result.map(row -> {
 			return RowFactory.create(row._1()._1(), row._1()._2(), row._1()._3(), row._2);
@@ -250,14 +250,16 @@ public class Query2 {
         
         Dataset<Row> dataset = spark.createDataFrame(resultJavaRDD, resultStruct);
         HdfsUtility.write(dataset, HdfsUtility.QUERY2_DIR, SaveMode.Overwrite, false, "query2_results.parquet");
-        if (ClassForTest.DEBUG) {
+        Instant end = Instant.now();
+		QueryMain.log.info("Query 2 completed in " + Duration.between(start, end).toMillis() + "ms");
+        /*if (QueryMain.DEBUG) {
             HdfsUtility.writeForTest(dataset, HdfsUtility.QUERY2_DIR, SaveMode.Overwrite, false, "query2_results.csv");
             List<Row> list =  resultJavaRDD.collect();
-        	ClassForTest.log.info("QUERY2 RESULTS:");
+        	QueryMain.log.info("QUERY2 RESULTS:");
             for (Row l: list) {
-            	ClassForTest.log.info(l);
+            	QueryMain.log.info(l);
             }
-        }
+        }*/
        
 	}
 	public static void main(String[] args) {

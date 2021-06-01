@@ -1,0 +1,16 @@
+Starting Spark in Debug Mode...
+2021-06-01 18:55:28.195 [main] INFO  queries.QueryMain.main(QueryMain.java:42) - Starting Queries ...
+2021-06-01 18:55:33.147 [main] INFO  queries.Query1.run(Query1.java:104) - Query 1 completed in 1256ms
+2021-06-01 18:55:35.497 [main] INFO  queries.Query2.run(Query2.java:254) - Query 2 completed in 1438ms
+2021-06-01 18:55:36.486 [main] INFO  queries.Query3.run(Query3.java:108) - Inizialization Cluster time: 736
+2021-06-01 18:55:38.553 [main] INFO  queries.Query3.run(Query3.java:185) - total: 2856ms
+2021-06-01 18:55:38.554 [main] INFO  queries.Query3.run(Query3.java:186) - Query 3 completed in 2856ms
+2021-06-01 18:55:40.169 [main] INFO  queries.Query3.run(Query3.java:213) - QUERY3 PERFORMANCE:
+2021-06-01 18:55:40.170 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS,2,382,0.005639449880543328]
+2021-06-01 18:55:40.170 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS-BISECTING,2,205,0.005391750687436297]
+2021-06-01 18:55:40.170 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS,3,177,0.003045791815468773]
+2021-06-01 18:55:40.170 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS-BISECTING,3,171,0.002325087346269719]
+2021-06-01 18:55:40.170 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS,4,175,0.0015091812504866202]
+2021-06-01 18:55:40.170 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS-BISECTING,4,188,0.001393250663976422]
+2021-06-01 18:55:40.170 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS,5,167,8.77316880204473E-4]
+2021-06-01 18:55:40.171 [main] INFO  queries.Query3.run(Query3.java:215) - [K-MEANS-BISECTING,5,212,7.508402900685479E-4]

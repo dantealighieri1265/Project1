@@ -58,13 +58,14 @@ public class Query3 {
 				regression.addData(dateInt, point._2());
 			}
         	
-        	double prediction = regression.predict(ClassForTest.FIRST_JUNE.getDayOfYear());
+        	double prediction = regression.predict(QueryMain.FIRST_JUNE.getDayOfYear());
         	if (prediction<0.0) {
         		prediction = 0.0;
         	}
         	return new Tuple2<>(row._1(), (int) prediction);
         	
         }).cache();
+        long time = 0;
         
         /*Preprocessing Dataset totale-popolazione per via di un errore nel nome della Valle D'Aosta */
         JavaPairRDD<String, Long> population = rawPopulation.mapToPair(row -> {
@@ -88,7 +89,7 @@ public class Query3 {
         }).join(areaRegression).mapToPair(row -> {
         	return new Tuple2<>(row._1(), row._2()._1() + row._2()._2());
         }).join(population).sortByKey().mapToPair(row -> {
-        	return new Tuple2<>(new Tuple2<>(row._1(), "1 " + ClassForTest.FIRST_JUNE.getMonth().name()), Double.valueOf(row._2()._1()) / Double.valueOf(row._2()._2()));
+        	return new Tuple2<>(new Tuple2<>(row._1(), "1 " + QueryMain.FIRST_JUNE.getMonth().name()), Double.valueOf(row._2()._1()) / Double.valueOf(row._2()._2()));
         }).cache();
         
         
@@ -98,11 +99,14 @@ public class Query3 {
         	return Vectors.dense(row._2());
         }).cache();
         
-        Instant foo_start = Instant.now();
+        /*Instant foo_start = Instant.now();
         KMeansModel cluster3 = KMeans.train(training.rdd(), 3, 100); 
-        Instant foo_end = Instant.now();
-        if (ClassForTest.DEBUG)
-        	ClassForTest.log.info("Inizialization Cluster time: "+Duration.between(foo_start, foo_end).toMillis());
+        Instant foo_end = Instant.now();*/
+        
+        if (QueryMain.DEBUG) {
+        	//time = Duration.between(foo_start, foo_end).toMillis();
+        	//QueryMain.log.info("Inizialization Cluster time: "+Duration.between(foo_start, foo_end).toMillis());
+        }
         ArrayList<Row> listPerformance = new ArrayList<>();
         ArrayList<JavaRDD<Row>> listJavaRDD = new ArrayList<>();
         
@@ -139,8 +143,7 @@ public class Query3 {
             
 		}
         
-        Instant end = Instant.now();
-		ClassForTest.log.info("Query 3 completed in " + Duration.between(start, end).toMillis() + "ms");
+        
 
        
         List<StructField> resultFields = new ArrayList<>();
@@ -176,12 +179,14 @@ public class Query3 {
         clusterResultFields.add(DataTypes.createStructField("percentuale_vaccinati", DataTypes.DoubleType, false));
         clusterResultFields.add(DataTypes.createStructField("cluster", DataTypes.IntegerType, false));
         StructType clusterResultStruct = DataTypes.createStructType(clusterResultFields);
+        
+        
      
         Dataset<Row> dataset_cluster = null;
         for (JavaRDD<Row> rdd : listJavaRDD) {
         	 dataset_cluster = spark.createDataFrame(rdd, clusterResultStruct);
         	HdfsUtility.write(dataset_cluster, HdfsUtility.QUERY3_CLUSTER_DIR+"_Support", SaveMode.Append, false, "_Support");
-        	if (ClassForTest.DEBUG) {
+        	if (QueryMain.DEBUG) {
             	HdfsUtility.writeForTest(dataset_cluster, HdfsUtility.QUERY3_CLUSTER_DIR, SaveMode.Append, false, "query3_cluster.csv");
         	}
 		}
@@ -189,31 +194,36 @@ public class Query3 {
         Dataset<Row> df_output=df.coalesce(1);
         HdfsUtility.write(df_output, HdfsUtility.QUERY3_CLUSTER_DIR, SaveMode.Overwrite, true, "query3_cluster.parquet");
         
+        Instant end = Instant.now();
+        //long w =  Duration.between(start, end).toMillis() - time;
+        QueryMain.log.info("total: " +Duration.between(start, end).toMillis()+ "ms");
+		QueryMain.log.info("Query 3 completed in " +Duration.between(start, end).toMillis()+ "ms");
         
-        if (ClassForTest.DEBUG) {
+        
+        if (QueryMain.DEBUG) {
             HdfsUtility.writeForTest(dataset_performance, HdfsUtility.QUERY3_PERFORMANCE_DIR, SaveMode.Overwrite, false, "query3_performance.csv");
             HdfsUtility.writeForTest(dataset_results, HdfsUtility.QUERY3_RESULTS_DIR, SaveMode.Overwrite, false, "query3_results.csv");
         }
         
-        if (ClassForTest.DEBUG) {
-        	List<Row> list =  resultJavaRDD.collect();
-        	ClassForTest.log.info("QUERY3 RESULTS:");
+        if (QueryMain.DEBUG) {
+        	/*List<Row> list =  resultJavaRDD.collect();
+        	QueryMain.log.info("QUERY3 RESULTS:");
             for (Row l: list) {
-            	ClassForTest.log.info(l);
-            }
+            	QueryMain.log.info(l);
+            }*/
             
-        	ClassForTest.log.info("QUERY3 PERFORMANCE:");
+        	QueryMain.log.info("QUERY3 PERFORMANCE:");
             for (Row l: listPerformance) {
-            	ClassForTest.log.info(l);
+            	QueryMain.log.info(l);
             }            
             
-            ClassForTest.log.info("QUERY3 CLUSTER:");
+            /*QueryMain.log.info("QUERY3 CLUSTER:");
             for (JavaRDD<Row> rdd : listJavaRDD) {
             	List<Row> list2 =  rdd.collect();
                 for (Row l: list2) {
-                	ClassForTest.log.info(l);
+                	QueryMain.log.info(l);
                 }
-			}
+			}*/
             
         }
 	}

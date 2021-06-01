@@ -11,11 +11,11 @@ import org.apache.log4j.PropertyConfigurator;
 import org.apache.spark.sql.SparkSession;
 import utils.HBaseQueries;
 
-public class ClassForTest {
+public class QueryMain {
 	
-	public static boolean DEBUG = false;
+	public static boolean DEBUG = true;
 	
-	public static Logger log = Logger.getLogger(ClassForTest.class);
+	public static Logger log = Logger.getLogger(QueryMain.class);
 	public static LocalDate FIRST_JUNE = LocalDate.parse("2021-06-01", DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 	public static LocalDate FIRST_FEBRUARY = LocalDate.parse("2021-02-01", DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 	public static LocalDate LAST_DECEMBER = LocalDate.parse("2020-12-31", DateTimeFormatter.ofPattern("yyyy-MM-dd"));
@@ -24,7 +24,7 @@ public class ClassForTest {
 	public static void main(String[] args) { 
 		
 		try {
-	        InputStream input = ClassForTest.class.getClassLoader().getResourceAsStream("log4j.properties");
+	        InputStream input = QueryMain.class.getClassLoader().getResourceAsStream("log4j.properties");
 	        Properties prop = new Properties();
 	        prop.load(input);
 	        PropertyConfigurator.configure(prop);
@@ -44,6 +44,10 @@ public class ClassForTest {
 		Query1.run(spark);
 		Query2.run(spark);
 		Query3.run(spark);
+		
+		if (DEBUG) {
+			return;
+		}
 				
 		log.info("Creating tables in HBase ...");
 		HBaseQueries hbq = new HBaseQueries(spark);

@@ -11,7 +11,7 @@ import org.apache.spark.sql.SparkSession;
 
 import com.google.protobuf.ServiceException;
 
-import queries.ClassForTest;
+import queries.QueryMain;
 
 public class HBaseQueries {
 	/**
@@ -62,7 +62,7 @@ public class HBaseQueries {
 			}
 			hbc.createTable(tableName, columnFamilies);
 		} catch (IOException | ServiceException e) {
-			ClassForTest.log.error(e);
+			QueryMain.log.error(e);
 		}
 	}
 	
@@ -165,7 +165,7 @@ public class HBaseQueries {
 			hbc.put("query1", "row2", "query1_family", "mese", "gennaio", "query1_family", "area", "Basilicata", "query1_family", "num_vacc", "16");
 			hbc.put("query1", "row1", "query1_family", "mese", "gennaio", "query1_family", "area", "Basilicata", "query1_family", "num_vacc", "15");
 		} catch (IOException | ServiceException e) {
-			ClassForTest.log.error(e);
+			QueryMain.log.error(e);
 		}
 		System.out.println(hbc.get("query1", "row2", "query1_family", "num_vacc"));
 		System.out.println(hbc.describeTable("query1"));
