@@ -21,7 +21,7 @@ public class ClassForTest {
 	public static LocalDate LAST_DECEMBER = LocalDate.parse("2020-12-31", DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) { 
 		
 		try {
 	        InputStream input = ClassForTest.class.getClassLoader().getResourceAsStream("log4j.properties");
