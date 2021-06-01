@@ -44,9 +44,7 @@ public class ClassForTest {
 		Query1.run(spark);
 		Query2.run(spark);
 		Query3.run(spark);
-		
-		if (DEBUG) return;
-		
+				
 		log.info("Creating tables in HBase ...");
 		HBaseQueries hbq = new HBaseQueries(spark);
 		hbq.createTable(HBaseQueries.QUERY1_TABLE, HBaseQueries.COL_FAM_1);

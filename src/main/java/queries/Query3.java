@@ -205,7 +205,7 @@ public class Query3 {
         	ClassForTest.log.info("QUERY3 PERFORMANCE:");
             for (Row l: listPerformance) {
             	ClassForTest.log.info(l);
-            }
+            }            
             
             ClassForTest.log.info("QUERY3 CLUSTER:");
             for (JavaRDD<Row> rdd : listJavaRDD) {
