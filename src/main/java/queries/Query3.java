@@ -35,19 +35,17 @@ public class Query3 {
 		
 		Dataset<Row> datasetPopulation = spark.read().option("header","true").parquet("hdfs:"+HdfsUtility.URL_HDFS+":" + 
         		HdfsUtility.PORT_HDFS+HdfsUtility.INPUT_HDFS+"/totale-popolazione.parquet");
-		datasetVaccine.toJavaRDD().collect();
 		
 		//TODO fill dei dati per regressione al 1 giugno
         Instant start = Instant.now();
         JavaRDD<Row> rawVaccine = datasetVaccine.toJavaRDD().cache();
-        JavaRDD<Row> rawPopulation = datasetPopulation.toJavaRDD().cache();
-        
+        JavaRDD<Row> rawPopulation = datasetPopulation.toJavaRDD();
         /*[Area, [Data, Vaccinazioni], ...]
          * Raggruppamento per Area di tutti i giorni di vaccinazione*/
         JavaPairRDD<String, Iterable<Tuple2<LocalDate, Long>>> groupByAreaSorted = rawVaccine.mapToPair(row -> {
         	LocalDate date = LocalDate.parse(row.getString(0), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         	return new Tuple2<>(row.getString(row.length()-1), new Tuple2<>(date, Long.valueOf(row.getInt(2))));
-        }).groupByKey().cache();
+        }).groupByKey();
         
         /*[Area, Vaccinazioni]
          * Regressione e predizione al 1 giugno, considerando una specifica Area*/
@@ -64,7 +62,7 @@ public class Query3 {
         	}
         	return new Tuple2<>(row._1(), (int) prediction);
         	
-        }).cache();
+        });
         long time = 0;
         
         /*Preprocessing Dataset totale-popolazione per via di un errore nel nome della Valle D'Aosta */
@@ -74,7 +72,7 @@ public class Query3 {
 				area = "Valle d'Aosta / Vallée d'Aoste";
 			}
         	return new Tuple2<>(area, Long.valueOf(row.getInt(1)));
-        }).cache();
+        });
 
         /*[[Area, Mese], Percentuale_Vaccinazioni]
          * 1. Somma delle vaccinazioni effettuate fino al 31 maggio, considerando una specifica Regione
@@ -90,14 +88,14 @@ public class Query3 {
         	return new Tuple2<>(row._1(), row._2()._1() + row._2()._2());
         }).join(population).sortByKey().mapToPair(row -> {
         	return new Tuple2<>(new Tuple2<>(row._1(), "1 " + QueryMain.FIRST_JUNE.getMonth().name()), Double.valueOf(row._2()._1()) / Double.valueOf(row._2()._2()));
-        }).cache();
+        });
         
         
         //Clustering
         //TODO Per eliminare il costo di inizializzazione metterlo all'inzio
         JavaRDD<Vector> training = predictionPercentage.map(row -> {
         	return Vectors.dense(row._2());
-        }).cache();
+        });
         
         /*Instant foo_start = Instant.now();
         KMeansModel cluster3 = KMeans.train(training.rdd(), 3, 100); 

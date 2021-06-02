@@ -46,8 +46,6 @@ public class Query2 {
         Dataset<Row> datasetVaccine = spark.read().option("header","true").parquet("hdfs:"+HdfsUtility.URL_HDFS+":" + 
         		HdfsUtility.PORT_HDFS+HdfsUtility.INPUT_HDFS+"/somministrazioni-vaccini-latest.parquet");
         
-        //TODO FAI QUALCOSA
-        datasetVaccine.toJavaRDD().collect();
         
         Instant start = Instant.now();
         JavaRDD<Row> rawVaccine = datasetVaccine.toJavaRDD();

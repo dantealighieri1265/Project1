@@ -34,8 +34,7 @@ public class QueryMain {
 		
 		SparkSession spark = SparkSession
                 .builder()
-                .appName("Test")
-                .config("spark.master", "local")
+                .appName("SABD_Project1")
                 .getOrCreate(); 	
         
 		DEBUG = Boolean.valueOf(args[0]);

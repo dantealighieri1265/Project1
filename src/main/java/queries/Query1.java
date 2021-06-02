@@ -36,7 +36,6 @@ public class Query1 {
 	        Dataset<Row> datasetType = spark.read().option("header","true").parquet("hdfs:"+HdfsUtility.URL_HDFS+":" + 
 	        		HdfsUtility.PORT_HDFS+HdfsUtility.INPUT_HDFS+"/punti-somministrazione-tipologia.parquet");
 
-	        datasetSummary.toJavaRDD().collect();
 
 	        Instant start = Instant.now();
 	        JavaRDD<Row> rawSummary = datasetSummary.toJavaRDD();
@@ -46,7 +45,7 @@ public class Query1 {
 	        Rappresenta il numero totale di centri vaccinazione, per regione*/
 	        JavaPairRDD<String, Long> centriCount = rawType.mapToPair((row -> { 
 	        	return new Tuple2<>( row.getString(row.length()-1), (long) 1);
-	        })).reduceByKey((x, y) -> x+y).cache();
+	        })).reduceByKey((x, y) -> x+y);
 	        
 	        	        
 	        /*ordinamento e filtraggio somministrazioni-vaccini-summary-latest*/
@@ -69,7 +68,7 @@ public class Query1 {
 	        //Preprocessing per effettuare il join tra i due dataset, attraverso la regione
 	        JavaPairRDD<String, Tuple2<Month, Long>> monthAreaTotalForJoin = monthAreaTotal.mapToPair(row -> {
 	        	return new Tuple2<> (row._1._2, new Tuple2<>(row._1._1, row._2));
-	        }).cache();
+	        });
 	        
 	        //Join
 	        JavaPairRDD<String, Tuple2<Tuple2<Month, Long>, Long>> monthAreaTotalJoin = monthAreaTotalForJoin.join(centriCount);
