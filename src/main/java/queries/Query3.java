@@ -4,9 +4,12 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.math3.stat.regression.SimpleRegression;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
@@ -37,7 +40,10 @@ public class Query3 {
         		HdfsUtility.PORT_HDFS+HdfsUtility.INPUT_HDFS+"/totale-popolazione.parquet");
 		
         Instant start = Instant.now();
-        JavaRDD<Row> rawVaccine = datasetVaccine.toJavaRDD().cache();
+        JavaRDD<Row> rawVaccine = datasetVaccine.toJavaRDD().filter(row ->{
+        	LocalDate date = LocalDate.parse(row.getString(0), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        	return date.isBefore(QueryMain.FIRST_JUNE);
+        }).cache();
         JavaRDD<Row> rawPopulation = datasetPopulation.toJavaRDD();
         
         /*[Area, [Data, Vaccinazioni], ...]
@@ -86,12 +92,12 @@ public class Query3 {
         }).join(areaRegression).mapToPair(row -> {
         	return new Tuple2<>(row._1(), row._2()._1() + row._2()._2());
         }).join(population).sortByKey().mapToPair(row -> {
-        	return new Tuple2<>(new Tuple2<>(row._1(), "1 " + QueryMain.FIRST_JUNE.getMonth().name()), Double.valueOf(row._2()._1()) / Double.valueOf(row._2()._2()));
+        	return new Tuple2<>(new Tuple2<>(row._1(), "1 " + StringUtils.capitalize(QueryMain.FIRST_JUNE.getMonth().getDisplayName(TextStyle.FULL,Locale.ITALIAN))), Double.valueOf(row._2()._1()) / Double.valueOf(row._2()._2()));
         });
         
         
         //Clustering
-        //TODO Per eliminare il costo di inizializzazione metterlo all'inzio
+
         JavaRDD<Vector> training = predictionPercentage.map(row -> {
         	return Vectors.dense(row._2());
         });
@@ -217,7 +223,7 @@ public class Query3 {
                 .appName("Test")
                 .config("spark.master", "local")
                 .getOrCreate();
-		Query3.run(spark);
+		Query3.run(spark);;
 	}
 
 }

@@ -5,10 +5,13 @@ import java.time.LocalDate;
 import java.time.Month;
 import java.time.Year;
 import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.Function;
@@ -87,7 +90,7 @@ public class Query1 {
 			//monthAreaTotalPerDay.collect();
 	        
 	        JavaRDD<Row> resultJavaRDD = monthAreaTotalPerDay.map((Function<Tuple2<Tuple2<Month, String>, Long>, Row>) row -> {
-				return RowFactory.create(row._1()._1().name(), row._1()._2(), row._2);
+				return RowFactory.create(StringUtils.capitalize(row._1()._1().getDisplayName(TextStyle.FULL,Locale.ITALIAN)), row._1()._2(), row._2);
 	        });
 	        
 	        List<StructField> resultFields = new ArrayList<>();

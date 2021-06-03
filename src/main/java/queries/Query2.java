@@ -6,14 +6,17 @@ import java.time.LocalDate;
 import java.time.Month;
 import java.time.Year;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.math3.stat.regression.SimpleRegression;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
@@ -88,7 +91,6 @@ public class Query2 {
         	Iterable<Tuple2<LocalDate, Long>> dayVaccines = row._2;
         	ArrayList<Tuple2<Tuple3<String, String, String>, Tuple2<Integer, Long>>> list = new ArrayList<>();
         	ArrayList<Tuple2<Tuple3<String, String, String>, Tuple2<Integer, Long>>> listSupport = new ArrayList<>();
-        	//int vaccinationDaysPerMonth = 0; 
         	boolean firstLap = true;
         	int monthOld = 0;
         	
@@ -122,8 +124,8 @@ public class Query2 {
 					if (n_vaccinationsDays >= 2) {
 						list.addAll(listSupport);
 					}else {
-						/*if (ClassForTest.DEBUG)
-							ClassForTest.log.info("Fascia d'età, Regione e Mese da scartare: "+row.toString());*/
+						if (QueryMain.DEBUG)
+							QueryMain.log.info("Fascia d'età, Regione e Mese da scartare: "+row.toString());
 					}
 					listSupport.clear();
 					n_vaccinationsDays = 0;
@@ -140,8 +142,8 @@ public class Query2 {
 			if (n_vaccinationsDays>=2) {
 				list.addAll(listSupport);
 			}else {
-				/*if (ClassForTest.DEBUG)
-					ClassForTest.log.info("Fascia d'età e regione da scartare: "+row.toString());*/
+				if (QueryMain.DEBUG)
+					QueryMain.log.info("Fascia d'età e regione da scartare: "+row.toString());
 			}
 			listSupport.clear();		
         	return list.iterator();  	
@@ -177,7 +179,7 @@ public class Query2 {
         		
 			}
         	if (QueryMain.DEBUG) {
-				//ClassForTest.log.info("Regione: "+row._1._1()+"; Fascia d'età: "+row._1._2()+"; Mese: "+row._1._3()+"; Lista giorni mancanti: "+list);
+				QueryMain.log.info("Regione: "+row._1._1()+"; Fascia d'età: "+row._1._2()+"; Mese: "+row._1._3()+"; Lista giorni mancanti: "+list);
 
         	}
         	Iterables.addAll(list, vaccineDaysPerMonth);
@@ -227,14 +229,11 @@ public class Query2 {
         }).sortByKey(new Query1Comparator<Month, String>(Comparator.<Month>naturalOrder(), Comparator.<String>naturalOrder())).flatMapToPair(row ->{
         	ArrayList<Tuple2<Tuple3<String, String, String>, Integer>> list = new ArrayList<>();
         	for (Tuple2<String, Integer> regVac : row._2) {
-        		String month = "1 "+ row._1._1().name();
+        		String month = "1 "+ StringUtils.capitalize(row._1._1().getDisplayName(TextStyle.FULL,Locale.ITALIAN));
 				list.add(new Tuple2<>(new Tuple3<>(month, row._1._2(), regVac._1), regVac._2));
 			}
         	return list.iterator();
         });
-
-        //result.collect();
-        
         
         JavaRDD<Row> resultJavaRDD = result.map(row -> {
 			return RowFactory.create(row._1()._1(), row._1()._2(), row._1()._3(), row._2);

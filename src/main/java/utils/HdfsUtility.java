@@ -27,10 +27,6 @@ public class HdfsUtility {
 	public final static String QUERY3_PERFORMANCE_DIR = "/Query3_performance";
 	public final static String QUERY3_CLUSTER_DIR = "/Query3_cluster";
 
-	public static void main(String[] args) {
-
-	}
-	
 	public static void write(Dataset<Row> dataset, String dir, SaveMode mode, boolean multipart, String newName) {
 		dataset.write()
 	        .format("parquet")
@@ -38,11 +34,10 @@ public class HdfsUtility {
 	        .mode(mode)
 	        .save("hdfs:"+URL_HDFS+":"+PORT_HDFS+OUTPUT_HDFS+dir);
 		FileSystem fs;
-		//final String codec = "parquet";
 		if (mode == SaveMode.Append) {
 			return;
 		}
-		if (multipart) {
+		if (multipart) {// eliminazione della cartella di supporto contenente i singoli file  
 	        try {
 				fs = FileSystem.get(new URI("hdfs:"+HdfsUtility.URL_HDFS+":" +HdfsUtility.PORT_HDFS), new Configuration());
 				fs.delete(new Path(HdfsUtility.OUTPUT_HDFS+HdfsUtility.QUERY3_CLUSTER_DIR+"_Support"), true);
@@ -53,7 +48,7 @@ public class HdfsUtility {
 			}
 		}
 		
-		try {
+		try {// modifica del nome del file
 			fs = FileSystem.get(new URI("hdfs:"+HdfsUtility.URL_HDFS+":" +HdfsUtility.PORT_HDFS), new Configuration());			
 			String old = fs.globStatus(new Path(OUTPUT_HDFS+dir+"/part*.parquet"))[0].getPath().getName();
 			fs.rename(new Path(OUTPUT_HDFS+dir+"/"+old), new Path(OUTPUT_HDFS+dir+"/"+newName));
