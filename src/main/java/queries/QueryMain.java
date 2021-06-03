@@ -45,6 +45,7 @@ public class QueryMain {
 		Query3.run(spark);
 		
 		if (DEBUG) {
+			spark.close();
 			return;
 		}
 				

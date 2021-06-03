@@ -250,14 +250,14 @@ public class Query2 {
         HdfsUtility.write(dataset, HdfsUtility.QUERY2_DIR, SaveMode.Overwrite, false, "query2_results.parquet");
         Instant end = Instant.now();
 		QueryMain.log.info("Query 2 completed in " + Duration.between(start, end).toMillis() + "ms");
-        /*if (QueryMain.DEBUG) {
+        if (QueryMain.DEBUG) {
             HdfsUtility.writeForTest(dataset, HdfsUtility.QUERY2_DIR, SaveMode.Overwrite, false, "query2_results.csv");
             List<Row> list =  resultJavaRDD.collect();
         	QueryMain.log.info("QUERY2 RESULTS:");
             for (Row l: list) {
             	QueryMain.log.info(l);
             }
-        }*/
+        }
        
 	}
 	public static void main(String[] args) {

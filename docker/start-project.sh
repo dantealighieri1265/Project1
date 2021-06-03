@@ -36,4 +36,4 @@ while [ $var -ne 4 ]; do
 done
 echo "Environment ready!"
 echo "Starting Spark ..."
-$SPARK_HOME/bin/spark-submit --class "queries.ClassForTest" --master "local" ../target/SABD_Project1-0.0.1-SNAPSHOT-jar-with-dependencies.jar
+$SPARK_HOME/bin/spark-submit --class "queries.ClassForTest" --master "local" ../target/SABD_Project1-0.0.1-SNAPSHOT-jar-with-dependencies.jar false

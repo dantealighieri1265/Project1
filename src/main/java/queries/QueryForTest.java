@@ -24,7 +24,7 @@ public class QueryForTest {
 			
 			SparkSession spark = SparkSession
 	                .builder()
-	                .appName("Test")
+	                .appName("SABD_Project1")
 	                .config("spark.master", "local")
 	                .getOrCreate(); 
 			

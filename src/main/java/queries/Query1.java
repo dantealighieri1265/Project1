@@ -102,14 +102,14 @@ public class Query1 {
 	        Instant end = Instant.now();
 			QueryMain.log.info("Query 1 completed in " + Duration.between(start, end).toMillis() + "ms");
 	        
-	        /*if (QueryMain.DEBUG) {
+	        if (QueryMain.DEBUG) {
 	        	HdfsUtility.writeForTest(dataset, HdfsUtility.QUERY1_DIR, SaveMode.Overwrite, false, "query1_results.csv");	 
 	        	List<Row> list =  resultJavaRDD.collect();
 	        	QueryMain.log.info("QUERY1 RESULTS:");
 	            for (Row l: list) {
 	            	QueryMain.log.info(l);
 	            }
-	        }*/
+	        }
 	        
 		}
 		public static void main(String[] args) {

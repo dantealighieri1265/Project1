@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.math3.stat.regression.SimpleRegression;
+import org.apache.spark.SparkContext;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.mllib.clustering.KMeans;
@@ -24,6 +25,7 @@ import org.apache.spark.sql.types.StructField;
 import org.apache.spark.sql.types.StructType;
 
 import scala.Tuple2;
+import scala.reflect.ClassTag;
 import utils.HdfsUtility;
 
 public class Query3 {
@@ -63,7 +65,6 @@ public class Query3 {
         	return new Tuple2<>(row._1(), (int) prediction);
         	
         });
-        long time = 0;
         
         /*Preprocessing Dataset totale-popolazione per via di un errore nel nome della Valle D'Aosta */
         JavaPairRDD<String, Long> population = rawPopulation.mapToPair(row -> {
@@ -166,6 +167,7 @@ public class Query3 {
         performanceFields.add(DataTypes.createStructField("cost", DataTypes.DoubleType, false));
         StructType performanceStruct = DataTypes.createStructType(performanceFields);
         
+        //JavaRDD<Row> performanceJavaRDD = spark.sparkContext().parallelize(listPerformance, 0, ClassTag<Row>);
         Dataset<Row> dataset_performance = spark.createDataFrame(listPerformance, performanceStruct);
         HdfsUtility.write(dataset_performance, HdfsUtility.QUERY3_PERFORMANCE_DIR, SaveMode.Overwrite, false, "query3_performance.parquet");
         
@@ -178,8 +180,6 @@ public class Query3 {
         clusterResultFields.add(DataTypes.createStructField("cluster", DataTypes.IntegerType, false));
         StructType clusterResultStruct = DataTypes.createStructType(clusterResultFields);
         
-        
-     
         Dataset<Row> dataset_cluster = null;
         for (JavaRDD<Row> rdd : listJavaRDD) {
         	 dataset_cluster = spark.createDataFrame(rdd, clusterResultStruct);
@@ -193,8 +193,6 @@ public class Query3 {
         HdfsUtility.write(df_output, HdfsUtility.QUERY3_CLUSTER_DIR, SaveMode.Overwrite, true, "query3_cluster.parquet");
         
         Instant end = Instant.now();
-        //long w =  Duration.between(start, end).toMillis() - time;
-        QueryMain.log.info("total: " +Duration.between(start, end).toMillis()+ "ms");
 		QueryMain.log.info("Query 3 completed in " +Duration.between(start, end).toMillis()+ "ms");
         
         
@@ -204,24 +202,24 @@ public class Query3 {
         }
         
         if (QueryMain.DEBUG) {
-        	/*List<Row> list =  resultJavaRDD.collect();
+        	List<Row> list =  resultJavaRDD.collect();
         	QueryMain.log.info("QUERY3 RESULTS:");
             for (Row l: list) {
             	QueryMain.log.info(l);
-            }*/
+            }
             
         	QueryMain.log.info("QUERY3 PERFORMANCE:");
             for (Row l: listPerformance) {
             	QueryMain.log.info(l);
             }            
             
-            /*QueryMain.log.info("QUERY3 CLUSTER:");
+            QueryMain.log.info("QUERY3 CLUSTER:");
             for (JavaRDD<Row> rdd : listJavaRDD) {
             	List<Row> list2 =  rdd.collect();
                 for (Row l: list2) {
                 	QueryMain.log.info(l);
                 }
-			}*/
+			}
             
         }
 	}
