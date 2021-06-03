@@ -69,7 +69,7 @@ public class HdfsUtility {
 	        .format("csv")
 	        .option("header", true)
 	        .mode(mode)
-	        .save("../results"+dir);
+	        .save("../debug_results"+dir);
 	}
 	
 	public static Dataset<Row> read(SparkSession spark, String fileName, String dir) {

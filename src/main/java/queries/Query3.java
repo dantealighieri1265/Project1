@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.math3.stat.regression.SimpleRegression;
-import org.apache.spark.SparkContext;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.mllib.clustering.KMeans;
@@ -25,7 +24,6 @@ import org.apache.spark.sql.types.StructField;
 import org.apache.spark.sql.types.StructType;
 
 import scala.Tuple2;
-import scala.reflect.ClassTag;
 import utils.HdfsUtility;
 
 public class Query3 {
@@ -38,10 +36,10 @@ public class Query3 {
 		Dataset<Row> datasetPopulation = spark.read().option("header","true").parquet("hdfs:"+HdfsUtility.URL_HDFS+":" + 
         		HdfsUtility.PORT_HDFS+HdfsUtility.INPUT_HDFS+"/totale-popolazione.parquet");
 		
-		//TODO fill dei dati per regressione al 1 giugno
         Instant start = Instant.now();
         JavaRDD<Row> rawVaccine = datasetVaccine.toJavaRDD().cache();
         JavaRDD<Row> rawPopulation = datasetPopulation.toJavaRDD();
+        
         /*[Area, [Data, Vaccinazioni], ...]
          * Raggruppamento per Area di tutti i giorni di vaccinazione*/
         JavaPairRDD<String, Iterable<Tuple2<LocalDate, Long>>> groupByAreaSorted = rawVaccine.mapToPair(row -> {
@@ -98,14 +96,6 @@ public class Query3 {
         	return Vectors.dense(row._2());
         });
         
-        /*Instant foo_start = Instant.now();
-        KMeansModel cluster3 = KMeans.train(training.rdd(), 3, 100); 
-        Instant foo_end = Instant.now();*/
-        
-        if (QueryMain.DEBUG) {
-        	//time = Duration.between(foo_start, foo_end).toMillis();
-        	//QueryMain.log.info("Inizialization Cluster time: "+Duration.between(foo_start, foo_end).toMillis());
-        }
         ArrayList<Row> listPerformance = new ArrayList<>();
         ArrayList<JavaRDD<Row>> listJavaRDD = new ArrayList<>();
         
@@ -142,13 +132,10 @@ public class Query3 {
             
 		}
         
-        
-
-       
         List<StructField> resultFields = new ArrayList<>();
         resultFields.add(DataTypes.createStructField("regione", DataTypes.StringType, false));
         resultFields.add(DataTypes.createStructField("giorno", DataTypes.StringType, false));
-        resultFields.add(DataTypes.createStructField("percentuale_vaccinati", DataTypes.DoubleType, false));
+        resultFields.add(DataTypes.createStructField("predizione_percentuale_vaccini", DataTypes.DoubleType, false));
         StructType resultStruct = DataTypes.createStructType(resultFields);
         
         // Saving results
@@ -161,19 +148,19 @@ public class Query3 {
         
         // Saving performance 
         List<StructField> performanceFields = new ArrayList<>();
-        performanceFields.add(DataTypes.createStructField("algorithm", DataTypes.StringType, false));
+        performanceFields.add(DataTypes.createStructField("modello", DataTypes.StringType, false));
         performanceFields.add(DataTypes.createStructField("k", DataTypes.IntegerType, false));
         performanceFields.add(DataTypes.createStructField("performance_ms", DataTypes.LongType, false));
         performanceFields.add(DataTypes.createStructField("cost", DataTypes.DoubleType, false));
         StructType performanceStruct = DataTypes.createStructType(performanceFields);
         
-        //JavaRDD<Row> performanceJavaRDD = spark.sparkContext().parallelize(listPerformance, 0, ClassTag<Row>);
+        
         Dataset<Row> dataset_performance = spark.createDataFrame(listPerformance, performanceStruct);
         HdfsUtility.write(dataset_performance, HdfsUtility.QUERY3_PERFORMANCE_DIR, SaveMode.Overwrite, false, "query3_performance.parquet");
         
         // Saving cluster
         List<StructField> clusterResultFields = new ArrayList<>();
-        clusterResultFields.add(DataTypes.createStructField("algorithm", DataTypes.StringType, false));
+        clusterResultFields.add(DataTypes.createStructField("modello", DataTypes.StringType, false));
         clusterResultFields.add(DataTypes.createStructField("k", DataTypes.IntegerType, false));
         clusterResultFields.add(DataTypes.createStructField("regione", DataTypes.StringType, false));
         clusterResultFields.add(DataTypes.createStructField("percentuale_vaccinati", DataTypes.DoubleType, false));
