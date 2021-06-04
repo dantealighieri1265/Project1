@@ -39,12 +39,6 @@ import utils.Query1Comparator;
 
 public class Query2 {
 	public static void run(SparkSession spark) {
-		
-		Logger.getLogger("org.apache.spark").setLevel(Level.ERROR);
-		Logger.getLogger("scala.Tuple2").setLevel(Level.ERROR);
-		Logger.getLogger("java.util").setLevel(Level.ERROR);
-		Logger.getLogger("java.time").setLevel(Level.ERROR);
-
         
         Dataset<Row> datasetVaccine = spark.read().option("header","true").parquet("hdfs:"+HdfsUtility.URL_HDFS+":" + 
         		HdfsUtility.PORT_HDFS+HdfsUtility.INPUT_HDFS+"/somministrazioni-vaccini-latest.parquet");

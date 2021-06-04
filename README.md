@@ -5,13 +5,14 @@ Marco Marcucci, Giuseppe Lasco
 * Installare Apache Spark
 * Eseguire `export SPARK_HOME=<spark-path> `
 * Installare Docker
-* Inserire in */etc/host* `127.0.0.1	hbase`
+* Inserire in */etc/hosts* `127.0.0.1	hbase`
 ## Ambiente Docker
 Nella directory `/Docker` sono presenti gli script che permettono il setup automatico dei framework. Lo script `start-dockers.sh` permette di avviare i servizi (NiFi, HDFS, HBASE, Docker network) e attendere che il framework di data ingestion si avvii e carichi tutti i dati necessari su HDFS. Lo script `start-project.sh` esegue le medesime operazioni del precedente ed inoltre sottomette l'applicazione a Spark appena l'ambiente è pronto.
 Lo script `stop-dockers.sh` permette, infine, di arrestare tutti i servizi precedentemente avviati.
 
-Al primo avvio del progetto è necessario configurare NiFi, perciò è utile seguire i seguenti passi:
+Al primo avvio del progetto è necessario configurare NiFi ed eseguire il build del progetto, perciò è utile seguire i seguenti passi:
 
+* Avviare lo script `maven-package.sh` nella directory `/spark_scripts`
 * Avviare lo script `start-dockers.sh` o `start-project.sh`
 * Collegarsi all'indirizzo <http://localhost:9880>
 * Caricare il template `nifi_template.xml` contenuto nella directory `/Docker/nifi_template`
@@ -41,4 +42,6 @@ Il secondo package contiene le classi di utilità, le quali permettono la comuni
 - `Query2Comparator.java`
 
 ## Directory
-La cartella `Report`contiene la relazione relativa al progetto. Nella cartella `Results`si trovano i risultati delle query in formato `csv` come richiesto dalla specifica.
+La cartella `Report` contiene la relazione relativa al progetto. Nella cartella `Results` si trovano i risultati delle query, ottenute dai dati aggiornati al 04/06/2021 11:00 AM, in formato `csv` come richiesto dalla specifica .
+
+
