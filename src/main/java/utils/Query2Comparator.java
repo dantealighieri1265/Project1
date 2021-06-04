@@ -1,13 +1,16 @@
 package utils;
 
 import java.io.Serializable;
-import java.text.ParseException;
 import java.util.Comparator;
 
 import scala.Tuple2;
 
 public class Query2Comparator<K,V> implements Comparator<Tuple2<K, V>>, Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Comparator<V> comparator_V;
 
     public Query2Comparator(Comparator<V> comparator_V) {
