@@ -157,7 +157,7 @@ public class Query3 {
         performanceFields.add(DataTypes.createStructField("modello", DataTypes.StringType, false));
         performanceFields.add(DataTypes.createStructField("k", DataTypes.IntegerType, false));
         performanceFields.add(DataTypes.createStructField("performance_ms", DataTypes.LongType, false));
-        performanceFields.add(DataTypes.createStructField("cost", DataTypes.DoubleType, false));
+        performanceFields.add(DataTypes.createStructField("cost_WSSSE", DataTypes.DoubleType, false));
         StructType performanceStruct = DataTypes.createStructType(performanceFields);
         
         
